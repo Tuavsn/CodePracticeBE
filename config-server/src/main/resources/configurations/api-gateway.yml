@@ -1,0 +1,38 @@
+spring:
+  cloud:
+    gateway:
+      globalcors:
+        cors-configurations:
+          "[/**]":
+            allowedOrigins: "*"
+            allowedHeaders: "*"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - PATCH
+              - DELETE
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: IDENTITY-SERVICE
+          uri: lb://IDENTITY-SERVICE
+          predicates:
+            - Path=/api/v1/identity-service/**
+          filters:
+            - RewritePath=/api/v1/identity-service/(?<path>.*), /${path}
+        - id: FORUM-SERVICE
+          uri: lb://FORUM-SERVICE
+          predicates:
+            - Path=/api/v1/forum-service/**
+          filters:
+            - RewritePath=/api/v1/forum-service/(?<path>.*), /${path}
+        - id: PROBLEM-SERVICE
+          uri: lb://PROBLEM-SERVICE
+          predicates:
+            - Path=/api/v1/problem-service/**
+          filters:
+            - RewritePath=/api/v1/problem-service/(?<path>.*), /${path}
+server:
+  port: 8080
