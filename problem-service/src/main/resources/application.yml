@@ -1,0 +1,5 @@
+spring:
+  config:
+    import: optional:configserver:http://${HOSTNAME}:${CONFIG_SERVER_PORT}
+  application:
+    name: problem-service

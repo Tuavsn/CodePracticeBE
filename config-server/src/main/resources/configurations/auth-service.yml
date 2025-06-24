@@ -1,0 +1,29 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    showSql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+  datasource:
+    url: ${AUTH_SERVICE_DB_URL}
+    username: ${AUTH_SERVICE_DB_USERNAME}
+    password: ${AUTH_SERVICE_DB_PASSWORD}
+    driverClassName: com.mysql.cj.jdbc.Driver
+
+server:
+  port: ${AUTH_SERVICE_PORT}
+
+eureka:
+  instance:
+    hostname: ${HOSTNAME}
+  client:
+    serviceUrl:
+      defaultZone: http://${HOSTNAME}:${EUREKA_SERVER_PORT}/eureka
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
