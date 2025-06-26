@@ -1,6 +1,6 @@
 package com.codepractice.common_lib.exceptions;
 
-import com.codepractice.common_lib.constants.ErrorCode;
+import com.codepractice.common_lib.enums.ErrorCode;
 
 public class AppException extends RuntimeException {
   private static final long serialVersionUID = 1L;

@@ -1,4 +1,4 @@
-package com.codepractice.common_lib.constants;
+package com.codepractice.common_lib.enums;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;

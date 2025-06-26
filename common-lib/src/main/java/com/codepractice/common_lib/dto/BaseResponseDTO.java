@@ -1,4 +1,4 @@
-package com.codepractice.common_lib.model.dto;
+package com.codepractice.common_lib.dto;
 
 import java.time.LocalDateTime;
 
