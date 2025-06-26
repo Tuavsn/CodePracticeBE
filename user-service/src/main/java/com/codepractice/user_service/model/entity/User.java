@@ -1,6 +1,10 @@
 package com.codepractice.user_service.model.entity;
 
-import com.codepractice.common_lib.model.entity.JpaBaseEntity;
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import com.codepractice.user_service.enums.AccountAchievement;
 import com.codepractice.user_service.enums.AccountGender;
 import com.codepractice.user_service.enums.AccountRole;
@@ -11,17 +15,24 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
-public class User extends JpaBaseEntity {
+@Builder
+public class User {
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
   @Column(unique = true, nullable = false)
   private String email;
 
@@ -62,4 +73,12 @@ public class User extends JpaBaseEntity {
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
   private AccountStatus status;
+
+  @CreationTimestamp
+  @Column(name = "created_at", nullable = false, updatable = false)
+  private LocalDateTime createdAt;
+
+  @UpdateTimestamp
+  @Column(name = "updated_at")
+  private LocalDateTime updatedAt;
 }
