@@ -1,16 +1,9 @@
 spring:
-  jpa:
-    hibernate:
-      ddl-auto: update
-    showSql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQL8Dialect
-  datasource:
-    url: ${FORUM_SERVICE_DB_URL}
-    username: ${FORUM_SERVICE_DB_USERNAME}
-    password: ${FORUM_SERVICE_DB_PASSWORD}
-    driverClassName: com.mysql.cj.jdbc.Driver
+  data:
+    mongodb:
+      uri: ${FORUM_SERVICE_DB_URL}
+      database: ${FORUM_SERVICE_DB}
+      auto-index-creation: true
 
 server:
   port: ${FORUM_SERVICE_PORT}
