@@ -1,10 +1,10 @@
-package com.codepractice.forum_service.model.dto.internal.response;
+package com.codepractice.problem_service.model.dto.internal.response;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 
-import com.codepractice.forum_service.model.entity.Author;
-import com.codepractice.forum_service.model.entity.Reaction;
+import com.codepractice.problem_service.model.entity.Author;
+import com.codepractice.problem_service.model.entity.Reaction;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 public class CommentResponse {
     private String id;
     private Author author;
-    private String postId;
+    private String problemId;
     private String content;
     private Set<Reaction> reactions;
     private LocalDateTime createdAt;

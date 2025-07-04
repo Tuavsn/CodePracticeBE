@@ -26,5 +26,4 @@ public class PostResponse {
     private List<String> topics;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private boolean isDeleted;
 }

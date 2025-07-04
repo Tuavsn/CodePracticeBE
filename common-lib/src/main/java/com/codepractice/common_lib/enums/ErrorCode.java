@@ -13,7 +13,8 @@ public enum ErrorCode {
   USER_NOT_FOUND(1002, "User not found", HttpStatus.NOT_FOUND),
   ROLE_NOT_FOUND(1003, "Role not found", HttpStatus.NOT_FOUND),
   POST_NOT_FOUND(1004, "Post not found", HttpStatus.NOT_FOUND),
-  COMMENT_NOT_FOUND(1005, "Comment not found", HttpStatus.NOT_FOUND);
+  COMMENT_NOT_FOUND(1005, "Comment not found", HttpStatus.NOT_FOUND),
+  PROBLEM_NOT_FOUND(1006, "Problem not found", HttpStatus.NOT_FOUND);
 
   private final int code;
   private final String message;
