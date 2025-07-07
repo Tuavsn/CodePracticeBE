@@ -1,0 +1,22 @@
+spring:
+  data:
+    mongodb:
+      uri: ${SUBMISSION_SERVICE_DB_URL}
+      database: ${SUBMISSION_SERVICE_DB}
+      auto-index-creation: true
+
+server:
+  port: ${SUBMISSION_SERVICE_PORT}
+
+eureka:
+  instance:
+    hostname: ${HOSTNAME}
+  client:
+    serviceUrl:
+      defaultZone: http://${HOSTNAME}:${EUREKA_SERVER_PORT}/eureka
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

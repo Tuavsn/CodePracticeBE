@@ -23,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("problems")
 @RequiredArgsConstructor
-public class ProblemController {
+public class ProblemInterfaceController {
     private final ProblemService problemService;
 
     @PostMapping

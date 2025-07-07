@@ -29,20 +29,21 @@ public class ProblemServiceImpl implements ProblemService {
         try {
             Problem savedProblem = problemRepository.save(
                 Problem.builder()
-                    .title(null)
-                    .description(null)
-                    .thumbnail(null)
-                    .constraints(null)
-                    .difficulty(null)
-                    .example(null)
-                    .tags(null)
-                    .hints(null)
-                    .sampleTests(null)
+                    .title(request.getTitle())
+                    .description(request.getDescription())
+                    .thumbnail(request.getThumbnail())
+                    .constraints(request.getConstraints())
+                    .difficulty(request.getDifficulty())
+                    .example(request.getExample())
+                    .tags(request.getTags())
+                    .hints(request.getHints())
+                    .codeTemplates(request.getCodeTemplates())
+                    .sampleTests(request.getSampleTests())
                     .totalSubmissions(0)
                     .totalAcceptedSubmissions(0)
-                    .totalScore(0)
-                    .timeLimitSeconds(0)
-                    .memoryLimitMb(0)
+                    .totalScore(request.getTotalScore())
+                    .timeLimitSeconds(request.getTimeLimitSeconds())
+                    .memoryLimitMb(request.getMemoryLimitMb())
                     .build()
             );
             log.info("Created problem with ID: {}", savedProblem.getId());
@@ -142,6 +143,7 @@ public class ProblemServiceImpl implements ProblemService {
                     .example(source.getExample())
                     .tags(source.getTags())
                     .hints(source.getHints())
+                    .codeTemplates(source.getCodeTemplates())
                     .sampleTests(source.getSampleTests())
                     .totalSubmissions(source.getTotalSubmissions())
                     .totalAcceptedSubmissions(source.getTotalAcceptedSubmissions())
@@ -168,6 +170,9 @@ public class ProblemServiceImpl implements ProblemService {
         }
         if (source.getDifficulty() != null) {
             target.setDifficulty(source.getDifficulty());
+        }
+        if (source.getCodeTemplates() != null && !source.getCodeTemplates().isEmpty()) {
+            target.setCodeTemplates(source.getCodeTemplates());
         }
         if (source.getExample() != null && !source.getExample().isEmpty()) {
             target.setExample(source.getExample());

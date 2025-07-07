@@ -27,6 +27,7 @@ public class Problem extends BaseEntity {
     private List<String> example;
     private List<String> tags;
     private List<String> hints;
+    private List<CodeTemplate> codeTemplates;
     private List<TestCase> sampleTests;
     private long totalSubmissions;
     private long totalAcceptedSubmissions;

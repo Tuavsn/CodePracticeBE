@@ -23,7 +23,7 @@ import com.codepractice.user_service.service.UserService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping
+@RequestMapping("users")
 @RequiredArgsConstructor
 public class UserInterfaceController {
     private final UserService userService;

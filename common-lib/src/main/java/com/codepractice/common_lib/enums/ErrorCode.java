@@ -14,7 +14,8 @@ public enum ErrorCode {
   ROLE_NOT_FOUND(1003, "Role not found", HttpStatus.NOT_FOUND),
   POST_NOT_FOUND(1004, "Post not found", HttpStatus.NOT_FOUND),
   COMMENT_NOT_FOUND(1005, "Comment not found", HttpStatus.NOT_FOUND),
-  PROBLEM_NOT_FOUND(1006, "Problem not found", HttpStatus.NOT_FOUND);
+  PROBLEM_NOT_FOUND(1006, "Problem not found", HttpStatus.NOT_FOUND),
+  UNSUPPORTED_EXECUTE_TYPE(1007, "Unsupported execute type", HttpStatus.BAD_REQUEST);
 
   private final int code;
   private final String message;

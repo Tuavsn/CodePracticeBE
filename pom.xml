@@ -40,9 +40,10 @@
 		<module>common-lib</module>
 		<module>auth-service</module>
 		<module>user-service</module>
-		<module>api-gateway</module>
+		<module>submission-service</module>
 		<module>forum-service</module>
 		<module>problem-service</module>
+		<module>api-gateway</module>
 		<module>config-server</module>
 		<module>eureka-server</module>
 	</modules>
