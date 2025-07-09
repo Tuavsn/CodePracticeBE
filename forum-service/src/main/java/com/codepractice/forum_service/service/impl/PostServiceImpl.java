@@ -33,7 +33,7 @@ public class PostServiceImpl implements PostService {
 
         try {
             UserResponse user = userService.getUserById(request.getUserId());
-            
+
             Post savedPost = postRepository.save(
                     Post.builder()
                             .author(
@@ -49,7 +49,7 @@ public class PostServiceImpl implements PostService {
                             .images(request.getImages())
                             .isDeleted(false)
                             .build());
-            
+
             log.info("Post created successfully with ID: {}", savedPost.getId());
             return createDTO(savedPost);
 
@@ -73,7 +73,7 @@ public class PostServiceImpl implements PostService {
 
             updatePost(request, existedPost);
             Post updatedPost = postRepository.save(existedPost);
-            
+
             log.info("Post updated successfully with ID: {}", id);
             return createDTO(updatedPost);
 
@@ -124,7 +124,7 @@ public class PostServiceImpl implements PostService {
 
         List<Post> posts = postRepository.findAllByIsDeleted(false);
         log.info("Found {} active posts", posts.size());
-        
+
         return posts.stream().map(post -> createDTO(post)).toList();
     }
 

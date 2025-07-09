@@ -12,7 +12,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SubmissionReponse {
+public class SubmissionResponse {
+    private String id;
     private String userId;
     private String problemId;
     private String code;

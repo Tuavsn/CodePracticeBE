@@ -15,7 +15,8 @@ public enum ErrorCode {
   POST_NOT_FOUND(1004, "Post not found", HttpStatus.NOT_FOUND),
   COMMENT_NOT_FOUND(1005, "Comment not found", HttpStatus.NOT_FOUND),
   PROBLEM_NOT_FOUND(1006, "Problem not found", HttpStatus.NOT_FOUND),
-  UNSUPPORTED_EXECUTE_TYPE(1007, "Unsupported execute type", HttpStatus.BAD_REQUEST);
+  UNSUPPORTED_EXECUTE_TYPE(1007, "Unsupported execute type", HttpStatus.BAD_REQUEST),
+  MISMATCH_BETWEEN_SAMPLETEST_AND_RESULT(1008, "Mismatch between Testcases and results", HttpStatus.INTERNAL_SERVER_ERROR);
 
   private final int code;
   private final String message;

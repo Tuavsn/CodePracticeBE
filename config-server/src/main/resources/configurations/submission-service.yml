@@ -20,3 +20,17 @@ management:
     web:
       exposure:
         include: "*"
+
+judge0:
+  url: ${JUDGE0_URL}
+  judge0_auth_token: ${JUDGE0_AUTH_TOKEN}
+  max_cpu_time_limit: ${MAX_CPU_TIME_LIMIT:15}
+  max_cpu_extra_time: ${MAX_CPU_EXTRA_TIME:2}
+  max_wall_time_limit: ${MAX_WALL_TIME_LIMIT:20}
+  max_memory_limit: ${MAX_MEMORY_LIMIT:256000}
+  max_stack_limit: ${MAX_STACK_LIMIT:128000}
+  max_max_processes_and_or_threads: ${MAX_MAX_PROCESSES_AND_OR_THREADS:120}
+  allow_enable_per_process_and_thread_time_limit: ${ALLOW_ENABLE_PER_PROCESS_AND_THREAD_TIME_LIMIT:true}
+  allow_enable_per_process_and_thread_memory_limit: ${ALLOW_ENABLE_PER_PROCESS_AND_THREAD_MEMORY_LIMIT:true}
+  max_max_file_size: ${MAX_MAX_FILE_SIZE:4096}
+  max_number_of_runs: ${MAX_NUMBER_OF_RUNS:20}

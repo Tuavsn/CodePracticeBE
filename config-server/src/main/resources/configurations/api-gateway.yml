@@ -50,5 +50,13 @@ spring:
               filters:
                 - StripPrefix=3  # Removes /api/v1/problem-service
 
+            # SUBMISSION ROUTE
+            - id: SUBMISSION-SERVICE
+              uri: lb://SUBMISSION-SERVICE
+              predicates:
+                - Path=/api/v1/submission-service/**
+              filters:
+                - StripPrefix=3  # Removes /api/v1/problem-service
+
 server:
   port: ${API_GATEWAY_PORT}

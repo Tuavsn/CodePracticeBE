@@ -8,6 +8,6 @@ import com.codepractice.submission_service.model.dto.external.UserResponse;
 
 @FeignClient("user-service")
 public interface UserServiceClient {
-    @GetMapping("/internal/{id}")
+    @GetMapping("/users/internal/{id}")
     UserResponse getUserById(@PathVariable Long id);
 }
