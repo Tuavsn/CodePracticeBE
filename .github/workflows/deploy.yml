@@ -1,0 +1,76 @@
+name: deploy
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+    environment: production
+    env:
+        # Common
+        API_PREFIX:                 ${{ vars.API_PREFIX }}
+        HOSTNAME:                   ${{ vars.HOSTNAME }}
+        CONFIG_SERVER_PORT:         ${{ vars.CONFIG_SERVER_PORT }}
+        EUREKA_SERVER_PORT:         ${{ vars.EUREKA_SERVER_PORT }}
+        API_GATEWAY_PORT:           ${{ vars.API_GATEWAY_PORT }}
+        AUTH_SERVICE_PORT:          ${{ vars.AUTH_SERVICE_PORT }}
+        USER_SERVICE_PORT:          ${{ vars.USER_SERVICE_PORT }}
+        FORUM_SERVICE_PORT:         ${{ vars.FORUM_SERVICE_PORT }}
+        PROBLEM_SERVICE_PORT:       ${{ vars.PROBLEM_SERVICE_PORT }}
+        SUBMISSION_SERVICE_PORT:    ${{ vars.SUBMISSION_SERVICE_PORT }}
+
+        # Auth service DB
+        AUTH_SERVICE_DB_URL:        ${{ secrets.AUTH_SERVICE_DB_URL }}
+        AUTH_SERVICE_DB_USERNAME:   ${{ secrets.AUTH_SERVICE_DB_USERNAME }}
+        AUTH_SERVICE_DB_PASSWORD:   ${{ secrets.AUTH_SERVICE_DB_PASSWORD }}
+
+        # User service DB
+        USER_SERVICE_DB_URL:        ${{ secrets.USER_SERVICE_DB_URL }}
+        USER_SERVICE_DB_USERNAME:   ${{ secrets.USER_SERVICE_DB_USERNAME }}
+        USER_SERVICE_DB_PASSWORD:   ${{ secrets.USER_SERVICE_DB_PASSWORD }}
+
+        # Forum service DB
+        FORUM_SERVICE_DB_URL:       ${{ secrets.FORUM_SERVICE_DB_URL }}
+        FORUM_SERVICE_DB:           ${{ secrets.FORUM_SERVICE_DB }}
+
+        # Problem service DB
+        PROBLEM_SERVICE_DB_URL:     ${{ secrets.PROBLEM_SERVICE_DB_URL }}
+        PROBLEM_SERVICE_DB:         ${{ secrets.PROBLEM_SERVICE_DB }}
+
+        # Submission service DB & Judge0
+        SUBMISSION_SERVICE_DB_URL:  ${{ secrets.SUBMISSION_SERVICE_DB_URL }}
+        SUBMISSION_SERVICE_DB:      ${{ secrets.SUBMISSION_SERVICE_DB }}
+        JUDGE0_URL:                 ${{ vars.JUDGE0_URL }}
+        JUDGE0_AUTH_TOKEN:          ${{ secrets.JUDGE0_AUTH_TOKEN }}
+
+        # OAuth for Auth Service
+        GOOGLE_CLIENT_ID:           ${{ secrets.GOOGLE_CLIENT_ID }}
+        GOOGLE_CLIENT_SECRET:       ${{ secrets.GOOGLE_CLIENT_SECRET }}
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build all services with Maven
+        run: mvn clean install -DskipTests
+
+      - name: Build Docker Images
+        run: |
+          docker-compose build
+
+      - name: Save Docker Images as Artifacts (optional)
+        uses: actions/upload-artifact@v3
+        with:
+          name: docker-images
+          path: |
+            **/target/*.jar
+
+      - name: Deploy with Docker Compose (optional, if self-hosted)
+        run: docker-compose up -d
