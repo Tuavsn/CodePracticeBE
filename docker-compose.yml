@@ -1,9 +1,5 @@
 version: '3.8'
 
-# Áp dụng cho tất cả services
-env_file:
-  - .env
-
 services:
   config-server:
     build: ./config-server
