@@ -1,13 +1,14 @@
+# config-server/src/main/resources/application.yml
 spring:
   profiles:
-    active: native
-  application:
-    name: config-server
+    active: docker
   cloud:
     config:
       server:
-        native:
-          search-locations: classpath:/configurations
+        composite:
+          - type: environment
+          - type: native
+            search-locations: classpath:/configurations
 
 server:
-  port: ${CONFIG_SERVER_PORT}
+  port: ${CONFIG_SERVER_PORT:8888}

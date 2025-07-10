@@ -4,9 +4,9 @@ services:
     ports:
       - "${CONFIG_SERVER_PORT}:8888"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker,native
+      - SPRING_PROFILES_ACTIVE=docker
+      # truyền tất cả env để composite:environment có thể đọc
       - HOSTNAME=${HOSTNAME}
-      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
       - EUREKA_SERVER_PORT=${EUREKA_SERVER_PORT}
       - AUTH_SERVICE_DB_URL=${AUTH_SERVICE_DB_URL}
       - AUTH_SERVICE_DB_USERNAME=${AUTH_SERVICE_DB_USERNAME}
@@ -22,11 +22,13 @@ services:
       - SUBMISSION_SERVICE_DB=${SUBMISSION_SERVICE_DB}
       - JUDGE0_URL=${JUDGE0_URL}
       - JUDGE0_AUTH_TOKEN=${JUDGE0_AUTH_TOKEN}
-      - USER_SERVICE_PORT=${USER_SERVICE_PORT}
       - AUTH_SERVICE_PORT=${AUTH_SERVICE_PORT}
+      - USER_SERVICE_PORT=${USER_SERVICE_PORT}
       - FORUM_SERVICE_PORT=${FORUM_SERVICE_PORT}
       - PROBLEM_SERVICE_PORT=${PROBLEM_SERVICE_PORT}
       - SUBMISSION_SERVICE_PORT=${SUBMISSION_SERVICE_PORT}
+      - API_GATEWAY_PORT=${API_GATEWAY_PORT}
+      - API_PREFIX=${API_PREFIX}
     networks:
       - judge-net
 
@@ -38,6 +40,7 @@ services:
       - config-server
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
     networks:
       - judge-net
 
@@ -50,6 +53,8 @@ services:
       - eureka-server
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
+      - HOSTNAME=${HOSTNAME}
     networks:
       - judge-net
 
@@ -62,6 +67,8 @@ services:
       - eureka-server
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
+      - HOSTNAME=${HOSTNAME}
     networks:
       - judge-net
 
@@ -74,6 +81,8 @@ services:
       - eureka-server
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
+      - HOSTNAME=${HOSTNAME}
     networks:
       - judge-net
 
@@ -86,6 +95,8 @@ services:
       - eureka-server
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
+      - HOSTNAME=${HOSTNAME}
     networks:
       - judge-net
 
@@ -98,6 +109,8 @@ services:
       - eureka-server
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
+      - HOSTNAME=${HOSTNAME}
     networks:
       - judge-net
 
@@ -113,8 +126,9 @@ services:
       - submission-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - API_PREFIX=${API_PREFIX}
+      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
       - HOSTNAME=${HOSTNAME}
+      - API_PREFIX=${API_PREFIX}
     networks:
       - judge-net
 
