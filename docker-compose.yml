@@ -23,6 +23,7 @@ services:
         condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
     networks:
       - code-judge-net
     healthcheck:
@@ -63,6 +64,7 @@ services:
         condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
       - AUTH_SERVICE_DB=${AUTH_SERVICE_DB}
       - AUTH_SERVICE_DB_USERNAME=${AUTH_SERVICE_DB_USERNAME}
       - AUTH_SERVICE_DB_PASSWORD=${AUTH_SERVICE_DB_PASSWORD}
@@ -100,6 +102,7 @@ services:
         condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
       - USER_SERVICE_DB=${USER_SERVICE_DB}
       - USER_SERVICE_DB_USERNAME=${USER_SERVICE_DB_USERNAME}
       - USER_SERVICE_DB_PASSWORD=${USER_SERVICE_DB_PASSWORD}
@@ -117,6 +120,7 @@ services:
         condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
       - FORUM_SERVICE_DB_URL=${FORUM_SERVICE_DB_URL}
       - FORUM_SERVICE_DB=${FORUM_SERVICE_DB}
     networks:
@@ -133,6 +137,7 @@ services:
         condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
       - PROBLEM_SERVICE_DB_URL=${PROBLEM_SERVICE_DB_URL}
       - PROBLEM_SERVICE_DB=${PROBLEM_SERVICE_DB}
     networks:
@@ -149,6 +154,7 @@ services:
         condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
       - SUBMISSION_SERVICE_DB_URL=${SUBMISSION_SERVICE_DB_URL}
       - SUBMISSION_SERVICE_DB=${SUBMISSION_SERVICE_DB}
       - JUDGE0_URL=${JUDGE0_URL}
@@ -184,6 +190,7 @@ services:
         condition: service_started
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
       - API_PREFIX=${API_PREFIX}
     networks:
       - code-judge-net
