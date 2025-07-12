@@ -1,0 +1,22 @@
+spring:
+  data:
+    mongodb:
+      uri: ${FORUM_SERVICE_DB_URL}
+      database: ${FORUM_SERVICE_DB}
+      auto-index-creation: true
+
+server:
+  port: ${FORUM_SERVICE_PORT}
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_URL}/eureka/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

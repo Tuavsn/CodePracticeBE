@@ -1,0 +1,19 @@
+spring:
+  security:
+    oauth2:
+
+server:
+  port: ${AUTH_SERVICE_PORT}
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_URL}/eureka/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

@@ -1,6 +1,5 @@
 spring:
   config:
-    import: optional:configserver:http://localhost:8888
+    import: optional:configserver:http://${HOSTNAME}:${CONFIG_SERVER_PORT}
   application:
-    name:
-      auth-service
+    name: auth-service

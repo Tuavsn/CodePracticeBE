@@ -2,136 +2,218 @@ services:
   config-server:
     build: ./config-server
     ports:
-      - "${CONFIG_SERVER_PORT}:8888"
+      - "${CONFIG_SERVER_PORT}:${CONFIG_SERVER_PORT}"
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
-      # truyền tất cả env để composite:environment có thể đọc
-      - HOSTNAME=${HOSTNAME}
-      - EUREKA_SERVER_PORT=${EUREKA_SERVER_PORT}
-      - AUTH_SERVICE_DB_URL=${AUTH_SERVICE_DB_URL}
-      - AUTH_SERVICE_DB_USERNAME=${AUTH_SERVICE_DB_USERNAME}
-      - AUTH_SERVICE_DB_PASSWORD=${AUTH_SERVICE_DB_PASSWORD}
-      - USER_SERVICE_DB_URL=${USER_SERVICE_DB_URL}
-      - USER_SERVICE_DB_USERNAME=${USER_SERVICE_DB_USERNAME}
-      - USER_SERVICE_DB_PASSWORD=${USER_SERVICE_DB_PASSWORD}
-      - FORUM_SERVICE_DB_URL=${FORUM_SERVICE_DB_URL}
-      - FORUM_SERVICE_DB=${FORUM_SERVICE_DB}
-      - PROBLEM_SERVICE_DB_URL=${PROBLEM_SERVICE_DB_URL}
-      - PROBLEM_SERVICE_DB=${PROBLEM_SERVICE_DB}
-      - SUBMISSION_SERVICE_DB_URL=${SUBMISSION_SERVICE_DB_URL}
-      - SUBMISSION_SERVICE_DB=${SUBMISSION_SERVICE_DB}
-      - JUDGE0_URL=${JUDGE0_URL}
-      - JUDGE0_AUTH_TOKEN=${JUDGE0_AUTH_TOKEN}
-      - AUTH_SERVICE_PORT=${AUTH_SERVICE_PORT}
-      - USER_SERVICE_PORT=${USER_SERVICE_PORT}
-      - FORUM_SERVICE_PORT=${FORUM_SERVICE_PORT}
-      - PROBLEM_SERVICE_PORT=${PROBLEM_SERVICE_PORT}
-      - SUBMISSION_SERVICE_PORT=${SUBMISSION_SERVICE_PORT}
-      - API_GATEWAY_PORT=${API_GATEWAY_PORT}
-      - API_PREFIX=${API_PREFIX}
+      - SPRING_PROFILES_ACTIVE=native
     networks:
-      - judge-net
+      - code-judge-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${CONFIG_SERVER_PORT}/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
 
   eureka-server:
     build: ./eureka-server
     ports:
-      - "${EUREKA_SERVER_PORT}:8761"
+      - "${EUREKA_SERVER_PORT}:${EUREKA_SERVER_PORT}"
     depends_on:
-      - config-server
+      config-server:
+        condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
+      - CONFIG_SERVER_URL=http://config-server:${CONFIG_SERVER_PORT}
+      - EUREKA_SERVER_PORT=${EUREKA_SERVER_PORT}
     networks:
-      - judge-net
+      - code-judge-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:${EUREKA_SERVER_PORT}/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+  auth-mysql:
+    image: mysql:8.0
+    container_name: auth-mysql
+    ports:
+      - "3307:3306"  # port máy host : port container
+    environment:
+      MYSQL_ROOT_PASSWORD: ${AUTH_SERVICE_DB_PASSWORD}
+      MYSQL_DATABASE: ${AUTH_SERVICE_DB}
+    volumes:
+      - auth-mysql-data:/var/lib/mysql
+    networks:
+      - code-judge-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   auth-service:
     build: ./auth-service
     ports:
-      - "${AUTH_SERVICE_PORT}:8080"
+      - "${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}"
     depends_on:
-      - config-server
-      - eureka-server
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      auth-mysql:
+        condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
-      - HOSTNAME=${HOSTNAME}
+      - CONFIG_SERVER_URL=http://config-server:${CONFIG_SERVER_PORT}
+      - EUREKA_SERVER_URL=http://eureka-server:${EUREKA_SERVER_PORT}
+      - AUTH_SERVICE_DB_URL=${AUTH_SERVICE_DB_URL}
+      - AUTH_SERVICE_DB=${AUTH_SERVICE_DB}
+      - AUTH_SERVICE_DB_USERNAME=${AUTH_SERVICE_DB_USERNAME}
+      - AUTH_SERVICE_DB_PASSWORD=${AUTH_SERVICE_DB_PASSWORD}
+      - AUTH_SERVICE_PORT=${AUTH_SERVICE_PORT}
     networks:
-      - judge-net
+      - code-judge-net
+
+  user-mysql:
+    image: mysql:8.0
+    container_name: user-mysql
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${USER_SERVICE_DB_PASSWORD}
+      MYSQL_DATABASE: ${USER_SERVICE_DB}
+    volumes:
+      - user-mysql-data:/var/lib/mysql
+    networks:
+      - code-judge-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   user-service:
     build: ./user-service
     ports:
-      - "${USER_SERVICE_PORT}:8080"
+      - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
     depends_on:
-      - config-server
-      - eureka-server
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      user-mysql:
+        condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
-      - HOSTNAME=${HOSTNAME}
+      - CONFIG_SERVER_URL=http://config-server:${CONFIG_SERVER_PORT}
+      - EUREKA_SERVER_URL=http://eureka-server:${EUREKA_SERVER_PORT}
+      - USER_SERVICE_DB_URL=${USER_SERVICE_DB_URL}
+      - USER_SERVICE_DB=${USER_SERVICE_DB}
+      - USER_SERVICE_DB_USERNAME=${USER_SERVICE_DB_USERNAME}
+      - USER_SERVICE_DB_PASSWORD=${USER_SERVICE_DB_PASSWORD}
+      - USER_SERVICE_PORT=${USER_SERVICE_PORT}
     networks:
-      - judge-net
+      - code-judge-net
 
   forum-service:
     build: ./forum-service
     ports:
-      - "${FORUM_SERVICE_PORT}:8080"
+      - "${FORUM_SERVICE_PORT}:${FORUM_SERVICE_PORT}"
     depends_on:
-      - config-server
-      - eureka-server
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
-      - HOSTNAME=${HOSTNAME}
+      - CONFIG_SERVER_URL=http://config-server:${CONFIG_SERVER_PORT}
+      - EUREKA_SERVER_URL=http://eureka-server:${EUREKA_SERVER_PORT}
+      - FORUM_SERVICE_DB_URL=${FORUM_SERVICE_DB_URL}
+      - FORUM_SERVICE_DB=${FORUM_SERVICE_DB}
+      - FORUM_SERVICE_PORT=${FORUM_SERVICE_PORT}
     networks:
-      - judge-net
+      - code-judge-net
 
   problem-service:
     build: ./problem-service
     ports:
-      - "${PROBLEM_SERVICE_PORT}:8080"
+      - "${PROBLEM_SERVICE_PORT}:${PROBLEM_SERVICE_PORT}"
     depends_on:
-      - config-server
-      - eureka-server
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
-      - HOSTNAME=${HOSTNAME}
+      - CONFIG_SERVER_URL=http://config-server:${CONFIG_SERVER_PORT}
+      - EUREKA_SERVER_URL=http://eureka-server:${EUREKA_SERVER_PORT}
+      - PROBLEM_SERVICE_DB_URL=${PROBLEM_SERVICE_DB_URL}
+      - PROBLEM_SERVICE_DB=${PROBLEM_SERVICE_DB}
+      - PROBLEM_SERVICE_PORT=${PROBLEM_SERVICE_PORT}
     networks:
-      - judge-net
+      - code-judge-net
 
   submission-service:
     build: ./submission-service
     ports:
-      - "${SUBMISSION_SERVICE_PORT}:8080"
+      - "${SUBMISSION_SERVICE_PORT}:${SUBMISSION_SERVICE_PORT}"
     depends_on:
-      - config-server
-      - eureka-server
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
-      - HOSTNAME=${HOSTNAME}
+      - CONFIG_SERVER_URL=http://config-server:${CONFIG_SERVER_PORT}
+      - EUREKA_SERVER_URL=http://eureka-server:${EUREKA_SERVER_PORT}
+      - SUBMISSION_SERVICE_DB_URL=${SUBMISSION_SERVICE_DB_URL}
+      - SUBMISSION_SERVICE_DB=${SUBMISSION_SERVICE_DB}
+      - JUDGE0_URL=${JUDGE0_URL}
+      - JUDGE0_AUTH_TOKEN=${JUDGE0_AUTH_TOKEN}
+      - SUBMISSION_SERVICE_PORT=${SUBMISSION_SERVICE_PORT}
+      # Judge0 configuration
+      - MAX_CPU_TIME_LIMIT=15
+      - MAX_CPU_EXTRA_TIME=2
+      - MAX_WALL_TIME_LIMIT=20
+      - MAX_MEMORY_LIMIT=256000
+      - MAX_STACK_LIMIT=128000
+      - MAX_MAX_PROCESSES_AND_OR_THREADS=120
+      - ALLOW_ENABLE_PER_PROCESS_AND_THREAD_TIME_LIMIT=true
+      - ALLOW_ENABLE_PER_PROCESS_AND_THREAD_MEMORY_LIMIT=true
+      - MAX_MAX_FILE_SIZE=4096
+      - MAX_NUMBER_OF_RUNS=20
     networks:
-      - judge-net
+      - code-judge-net
 
   api-gateway:
     build: ./api-gateway
     ports:
-      - "${API_GATEWAY_PORT}:8080"
+      - "${API_GATEWAY_PORT}:${API_GATEWAY_PORT}"
     depends_on:
-      - auth-service
-      - user-service
-      - forum-service
-      - problem-service
-      - submission-service
+      auth-service:
+        condition: service_started
+      user-service:
+        condition: service_started
+      forum-service:
+        condition: service_started
+      problem-service:
+        condition: service_started
+      submission-service:
+        condition: service_started
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
-      - HOSTNAME=${HOSTNAME}
+      - CONFIG_SERVER_URL=http://config-server:${CONFIG_SERVER_PORT}
+      - EUREKA_SERVER_URL=http://eureka-server:${EUREKA_SERVER_PORT}
       - API_PREFIX=${API_PREFIX}
+      - API_GATEWAY_PORT=${API_GATEWAY_PORT}
     networks:
-      - judge-net
+      - code-judge-net
 
 networks:
-  judge-net:
+  code-judge-net:
     driver: bridge
+
+volumes:
+  auth-mysql-data:
+  user-mysql-data:

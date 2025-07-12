@@ -1,0 +1,69 @@
+spring:
+  cloud:
+    gateway:
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+          globalcors:
+            cors-configurations:
+              "[/**]":
+                allowedOrigins: "*"
+                allowedHeaders: "*"
+                allowedMethods:
+                  - GET
+                  - POST
+                  - PUT
+                  - PATCH
+                  - DELETE
+          routes:
+            # AUTH ROUTE
+            - id: AUTH-SERVICE
+              uri: lb://AUTH-SERVICE
+              predicates:
+                - Path=/api/v1/auth-service/**
+              filters:
+                - StripPrefix=3  # Removes /api/v1/auth-service
+            
+            # USER ROUTE  
+            - id: USER-SERVICE
+              uri: lb://USER-SERVICE
+              predicates:
+                - Path=/api/v1/user-service/**
+              filters:
+                - StripPrefix=3  # Removes /api/v1/user-service
+            
+            # FORUM ROUTE
+            - id: FORUM-SERVICE
+              uri: lb://FORUM-SERVICE
+              predicates:
+                - Path=/api/v1/forum-service/**
+              filters:
+                - StripPrefix=3  # Removes /api/v1/forum-service
+            
+            # PROBLEM ROUTE
+            - id: PROBLEM-SERVICE
+              uri: lb://PROBLEM-SERVICE
+              predicates:
+                - Path=/api/v1/problem-service/**
+              filters:
+                - StripPrefix=3  # Removes /api/v1/problem-service
+
+            # SUBMISSION ROUTE
+            - id: SUBMISSION-SERVICE
+              uri: lb://SUBMISSION-SERVICE
+              predicates:
+                - Path=/api/v1/submission-service/**
+              filters:
+                - StripPrefix=3  # Removes /api/v1/problem-service
+
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_URL}/eureka/
+
+server:
+  port: ${API_GATEWAY_PORT}
