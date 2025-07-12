@@ -23,11 +23,13 @@ jobs:
 
         # Auth service DB
         AUTH_SERVICE_DB_URL:        ${{ secrets.AUTH_SERVICE_DB_URL }}
+        AUTH_SERVICE_DB:            ${{ secrets.AUTH_SERVICE_DB }}
         AUTH_SERVICE_DB_USERNAME:   ${{ secrets.AUTH_SERVICE_DB_USERNAME }}
         AUTH_SERVICE_DB_PASSWORD:   ${{ secrets.AUTH_SERVICE_DB_PASSWORD }}
 
         # User service DB
         USER_SERVICE_DB_URL:        ${{ secrets.USER_SERVICE_DB_URL }}
+        USER_SERVICE_DB:            ${{ secrets.USER_SERVICE_DB }}
         USER_SERVICE_DB_USERNAME:   ${{ secrets.USER_SERVICE_DB_USERNAME }}
         USER_SERVICE_DB_PASSWORD:   ${{ secrets.USER_SERVICE_DB_PASSWORD }}
 
