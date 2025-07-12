@@ -17,4 +17,4 @@ management:
       show-details: always
 
 server:
-  port: ${CONFIG_SERVER_PORT:8888}
+  port: 8888

@@ -2,14 +2,13 @@ services:
   config-server:
     build: ./config-server
     ports:
-      - "${CONFIG_SERVER_PORT}:${CONFIG_SERVER_PORT}"
+      - "8888:8888"
     environment:
       - SPRING_PROFILES_ACTIVE=native
-      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
     networks:
       - code-judge-net
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:${CONFIG_SERVER_PORT}/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -18,19 +17,16 @@ services:
   eureka-server:
     build: ./eureka-server
     ports:
-      - "${EUREKA_SERVER_PORT}:${EUREKA_SERVER_PORT}"
+      - "8761:8761"
     depends_on:
       config-server:
         condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
-      - CONFIG_SERVER_URL=http://config-server:${CONFIG_SERVER_PORT}
-      - EUREKA_SERVER_PORT=${EUREKA_SERVER_PORT}
     networks:
       - code-judge-net
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:${EUREKA_SERVER_PORT}/actuator/health"]
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -57,7 +53,7 @@ services:
   auth-service:
     build: ./auth-service
     ports:
-      - "${AUTH_SERVICE_PORT}:${AUTH_SERVICE_PORT}"
+      - "9000:9000"
     depends_on:
       config-server:
         condition: service_healthy
@@ -67,15 +63,9 @@ services:
         condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
-      - CONFIG_SERVER_URL=http://config-server:${CONFIG_SERVER_PORT}
-      - EUREKA_SERVER_PORT=${EUREKA_SERVER_PORT}
-      - EUREKA_SERVER_URL=http://eureka-server:${EUREKA_SERVER_PORT}
-      - AUTH_SERVICE_DB_URL=${AUTH_SERVICE_DB_URL}
       - AUTH_SERVICE_DB=${AUTH_SERVICE_DB}
       - AUTH_SERVICE_DB_USERNAME=${AUTH_SERVICE_DB_USERNAME}
       - AUTH_SERVICE_DB_PASSWORD=${AUTH_SERVICE_DB_PASSWORD}
-      - AUTH_SERVICE_PORT=${AUTH_SERVICE_PORT}
     networks:
       - code-judge-net
 
@@ -100,7 +90,7 @@ services:
   user-service:
     build: ./user-service
     ports:
-      - "${USER_SERVICE_PORT}:${USER_SERVICE_PORT}"
+      - "9001:9001"
     depends_on:
       config-server:
         condition: service_healthy
@@ -110,22 +100,16 @@ services:
         condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
-      - CONFIG_SERVER_URL=http://config-server:${CONFIG_SERVER_PORT}
-      - EUREKA_SERVER_PORT=${EUREKA_SERVER_PORT}
-      - EUREKA_SERVER_URL=http://eureka-server:${EUREKA_SERVER_PORT}
-      - USER_SERVICE_DB_URL=${USER_SERVICE_DB_URL}
       - USER_SERVICE_DB=${USER_SERVICE_DB}
       - USER_SERVICE_DB_USERNAME=${USER_SERVICE_DB_USERNAME}
       - USER_SERVICE_DB_PASSWORD=${USER_SERVICE_DB_PASSWORD}
-      - USER_SERVICE_PORT=${USER_SERVICE_PORT}
     networks:
       - code-judge-net
 
   forum-service:
     build: ./forum-service
     ports:
-      - "${FORUM_SERVICE_PORT}:${FORUM_SERVICE_PORT}"
+      - "9002:9002"
     depends_on:
       config-server:
         condition: service_healthy
@@ -133,20 +117,15 @@ services:
         condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
-      - CONFIG_SERVER_URL=http://config-server:${CONFIG_SERVER_PORT}
-      - EUREKA_SERVER_PORT=${EUREKA_SERVER_PORT}
-      - EUREKA_SERVER_URL=http://eureka-server:${EUREKA_SERVER_PORT}
       - FORUM_SERVICE_DB_URL=${FORUM_SERVICE_DB_URL}
       - FORUM_SERVICE_DB=${FORUM_SERVICE_DB}
-      - FORUM_SERVICE_PORT=${FORUM_SERVICE_PORT}
     networks:
       - code-judge-net
 
   problem-service:
     build: ./problem-service
     ports:
-      - "${PROBLEM_SERVICE_PORT}:${PROBLEM_SERVICE_PORT}"
+      - "9003:9003"
     depends_on:
       config-server:
         condition: service_healthy
@@ -154,20 +133,15 @@ services:
         condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
-      - CONFIG_SERVER_URL=http://config-server:${CONFIG_SERVER_PORT}
-      - EUREKA_SERVER_PORT=${EUREKA_SERVER_PORT}
-      - EUREKA_SERVER_URL=http://eureka-server:${EUREKA_SERVER_PORT}
       - PROBLEM_SERVICE_DB_URL=${PROBLEM_SERVICE_DB_URL}
       - PROBLEM_SERVICE_DB=${PROBLEM_SERVICE_DB}
-      - PROBLEM_SERVICE_PORT=${PROBLEM_SERVICE_PORT}
     networks:
       - code-judge-net
 
   submission-service:
     build: ./submission-service
     ports:
-      - "${SUBMISSION_SERVICE_PORT}:${SUBMISSION_SERVICE_PORT}"
+      - "9004:9004"
     depends_on:
       config-server:
         condition: service_healthy
@@ -175,15 +149,10 @@ services:
         condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
-      - CONFIG_SERVER_URL=http://config-server:${CONFIG_SERVER_PORT}
-      - EUREKA_SERVER_PORT=${EUREKA_SERVER_PORT}
-      - EUREKA_SERVER_URL=http://eureka-server:${EUREKA_SERVER_PORT}
       - SUBMISSION_SERVICE_DB_URL=${SUBMISSION_SERVICE_DB_URL}
       - SUBMISSION_SERVICE_DB=${SUBMISSION_SERVICE_DB}
       - JUDGE0_URL=${JUDGE0_URL}
       - JUDGE0_AUTH_TOKEN=${JUDGE0_AUTH_TOKEN}
-      - SUBMISSION_SERVICE_PORT=${SUBMISSION_SERVICE_PORT}
       # Judge0 configuration
       - MAX_CPU_TIME_LIMIT=15
       - MAX_CPU_EXTRA_TIME=2
@@ -201,7 +170,7 @@ services:
   api-gateway:
     build: ./api-gateway
     ports:
-      - "${API_GATEWAY_PORT}:${API_GATEWAY_PORT}"
+      - "8080:8080"
     depends_on:
       auth-service:
         condition: service_started
@@ -215,12 +184,7 @@ services:
         condition: service_started
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
-      - CONFIG_SERVER_URL=http://config-server:${CONFIG_SERVER_PORT}
-      - EUREKA_SERVER_PORT=${EUREKA_SERVER_PORT}
-      - EUREKA_SERVER_URL=http://eureka-server:${EUREKA_SERVER_PORT}
       - API_PREFIX=${API_PREFIX}
-      - API_GATEWAY_PORT=${API_GATEWAY_PORT}
     networks:
       - code-judge-net
 

@@ -1,17 +1,16 @@
 spring:
   security:
     oauth2:
-      
 
 server:
-  port: ${AUTH_SERVICE_PORT}
+  port: 9000
 
 eureka:
   instance:
-    hostname: ${HOSTNAME}
+    hostname: localhost
   client:
     serviceUrl:
-      defaultZone: http://${HOSTNAME}:${EUREKA_SERVER_PORT}/eureka
+      defaultZone: http://localhost:8761/eureka
 
 management:
   endpoints:

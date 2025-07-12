@@ -11,24 +11,13 @@ jobs:
     env:
         # Common
         API_PREFIX:                 ${{ vars.API_PREFIX }}
-        HOSTNAME:                   ${{ vars.HOSTNAME }}
-        CONFIG_SERVER_PORT:         ${{ vars.CONFIG_SERVER_PORT }}
-        EUREKA_SERVER_PORT:         ${{ vars.EUREKA_SERVER_PORT }}
-        API_GATEWAY_PORT:           ${{ vars.API_GATEWAY_PORT }}
-        AUTH_SERVICE_PORT:          ${{ vars.AUTH_SERVICE_PORT }}
-        USER_SERVICE_PORT:          ${{ vars.USER_SERVICE_PORT }}
-        FORUM_SERVICE_PORT:         ${{ vars.FORUM_SERVICE_PORT }}
-        PROBLEM_SERVICE_PORT:       ${{ vars.PROBLEM_SERVICE_PORT }}
-        SUBMISSION_SERVICE_PORT:    ${{ vars.SUBMISSION_SERVICE_PORT }}
 
         # Auth service DB
-        AUTH_SERVICE_DB_URL:        ${{ secrets.AUTH_SERVICE_DB_URL }}
         AUTH_SERVICE_DB:            ${{ secrets.AUTH_SERVICE_DB }}
         AUTH_SERVICE_DB_USERNAME:   ${{ secrets.AUTH_SERVICE_DB_USERNAME }}
         AUTH_SERVICE_DB_PASSWORD:   ${{ secrets.AUTH_SERVICE_DB_PASSWORD }}
 
         # User service DB
-        USER_SERVICE_DB_URL:        ${{ secrets.USER_SERVICE_DB_URL }}
         USER_SERVICE_DB:            ${{ secrets.USER_SERVICE_DB }}
         USER_SERVICE_DB_USERNAME:   ${{ secrets.USER_SERVICE_DB_USERNAME }}
         USER_SERVICE_DB_PASSWORD:   ${{ secrets.USER_SERVICE_DB_PASSWORD }}
@@ -53,45 +42,6 @@ jobs:
     steps:
       - name: Checkout Source
         uses: actions/checkout@v3
-
-      - name: Generate .env file
-        run: |
-          cat > .env <<EOF
-          API_PREFIX=${{ env.API_PREFIX }}
-          HOSTNAME=${{ env.HOSTNAME }}
-          CONFIG_SERVER_PORT=${{ env.CONFIG_SERVER_PORT }}
-          EUREKA_SERVER_PORT=${{ env.EUREKA_SERVER_PORT }}
-          API_GATEWAY_PORT=${{ env.API_GATEWAY_PORT }}
-          AUTH_SERVICE_PORT=${{ env.AUTH_SERVICE_PORT }}
-          USER_SERVICE_PORT=${{ env.USER_SERVICE_PORT }}
-          FORUM_SERVICE_PORT=${{ env.FORUM_SERVICE_PORT }}
-          PROBLEM_SERVICE_PORT=${{ env.PROBLEM_SERVICE_PORT }}
-          SUBMISSION_SERVICE_PORT=${{ env.SUBMISSION_SERVICE_PORT }}
-          
-          AUTH_SERVICE_DB_URL=${{ env.AUTH_SERVICE_DB_URL }}
-          AUTH_SERVICE_DB=${{ env.AUTH_SERVICE_DB }}
-          AUTH_SERVICE_DB_USERNAME=${{ env.AUTH_SERVICE_DB_USERNAME }}
-          AUTH_SERVICE_DB_PASSWORD=${{ env.AUTH_SERVICE_DB_PASSWORD }}
-          
-          USER_SERVICE_DB_URL=${{ env.USER_SERVICE_DB_URL }}
-          USER_SERVICE_DB=${{ env.USER_SERVICE_DB }}
-          USER_SERVICE_DB_USERNAME=${{ env.USER_SERVICE_DB_USERNAME }}
-          USER_SERVICE_DB_PASSWORD=${{ env.USER_SERVICE_DB_PASSWORD }}
-          
-          FORUM_SERVICE_DB_URL=${{ env.FORUM_SERVICE_DB_URL }}
-          FORUM_SERVICE_DB=${{ env.FORUM_SERVICE_DB }}
-          
-          PROBLEM_SERVICE_DB_URL=${{ env.PROBLEM_SERVICE_DB_URL }}
-          PROBLEM_SERVICE_DB=${{ env.PROBLEM_SERVICE_DB }}
-          
-          SUBMISSION_SERVICE_DB_URL=${{ env.SUBMISSION_SERVICE_DB_URL }}
-          SUBMISSION_SERVICE_DB=${{ env.SUBMISSION_SERVICE_DB }}
-          JUDGE0_URL=${{ env.JUDGE0_URL }}
-          JUDGE0_AUTH_TOKEN=${{ env.JUDGE0_AUTH_TOKEN }}
-          
-          GOOGLE_CLIENT_ID=${{ env.GOOGLE_CLIENT_ID }}
-          GOOGLE_CLIENT_SECRET=${{ env.GOOGLE_CLIENT_SECRET }}
-          EOF
 
       - name: Set up JDK 17
         uses: actions/setup-java@v3

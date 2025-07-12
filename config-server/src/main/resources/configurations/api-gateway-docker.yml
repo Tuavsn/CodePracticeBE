@@ -63,7 +63,7 @@ eureka:
     prefer-ip-address: true
   client:
     serviceUrl:
-      defaultZone: ${EUREKA_SERVER_URL}/eureka/
+      defaultZone: http://eureka-server:8761/eureka/
 
 server:
-  port: ${API_GATEWAY_PORT}
+  port: 8080

@@ -13,14 +13,14 @@ spring:
     driverClassName: com.mysql.cj.jdbc.Driver
 
 server:
-  port: ${USER_SERVICE_PORT}
+  port: 9001
 
 eureka:
   instance:
     prefer-ip-address: true
   client:
     serviceUrl:
-      defaultZone: ${EUREKA_SERVER_URL}/eureka/
+      defaultZone: http://eureka-server:8761/eureka/
 
 management:
   endpoints:
