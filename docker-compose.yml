@@ -24,7 +24,6 @@ services:
         condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
       - CONFIG_SERVER_URL=http://config-server:${CONFIG_SERVER_PORT}
       - EUREKA_SERVER_PORT=${EUREKA_SERVER_PORT}
     networks:
@@ -67,9 +66,7 @@ services:
         condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
       - CONFIG_SERVER_URL=http://config-server:${CONFIG_SERVER_PORT}
-      - EUREKA_SERVER_PORT=${EUREKA_SERVER_PORT}
       - EUREKA_SERVER_URL=http://eureka-server:${EUREKA_SERVER_PORT}
       - AUTH_SERVICE_DB_URL=${AUTH_SERVICE_DB_URL}
       - AUTH_SERVICE_DB=${AUTH_SERVICE_DB}
@@ -110,9 +107,7 @@ services:
         condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
       - CONFIG_SERVER_URL=http://config-server:${CONFIG_SERVER_PORT}
-      - EUREKA_SERVER_PORT=${EUREKA_SERVER_PORT}
       - EUREKA_SERVER_URL=http://eureka-server:${EUREKA_SERVER_PORT}
       - USER_SERVICE_DB_URL=${USER_SERVICE_DB_URL}
       - USER_SERVICE_DB=${USER_SERVICE_DB}
@@ -133,9 +128,7 @@ services:
         condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
       - CONFIG_SERVER_URL=http://config-server:${CONFIG_SERVER_PORT}
-      - EUREKA_SERVER_PORT=${EUREKA_SERVER_PORT}
       - EUREKA_SERVER_URL=http://eureka-server:${EUREKA_SERVER_PORT}
       - FORUM_SERVICE_DB_URL=${FORUM_SERVICE_DB_URL}
       - FORUM_SERVICE_DB=${FORUM_SERVICE_DB}
@@ -154,9 +147,7 @@ services:
         condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
       - CONFIG_SERVER_URL=http://config-server:${CONFIG_SERVER_PORT}
-      - EUREKA_SERVER_PORT=${EUREKA_SERVER_PORT}
       - EUREKA_SERVER_URL=http://eureka-server:${EUREKA_SERVER_PORT}
       - PROBLEM_SERVICE_DB_URL=${PROBLEM_SERVICE_DB_URL}
       - PROBLEM_SERVICE_DB=${PROBLEM_SERVICE_DB}
@@ -175,9 +166,7 @@ services:
         condition: service_healthy
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
       - CONFIG_SERVER_URL=http://config-server:${CONFIG_SERVER_PORT}
-      - EUREKA_SERVER_PORT=${EUREKA_SERVER_PORT}
       - EUREKA_SERVER_URL=http://eureka-server:${EUREKA_SERVER_PORT}
       - SUBMISSION_SERVICE_DB_URL=${SUBMISSION_SERVICE_DB_URL}
       - SUBMISSION_SERVICE_DB=${SUBMISSION_SERVICE_DB}
@@ -215,9 +204,7 @@ services:
         condition: service_started
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - CONFIG_SERVER_PORT=${CONFIG_SERVER_PORT}
       - CONFIG_SERVER_URL=http://config-server:${CONFIG_SERVER_PORT}
-      - EUREKA_SERVER_PORT=${EUREKA_SERVER_PORT}
       - EUREKA_SERVER_URL=http://eureka-server:${EUREKA_SERVER_PORT}
       - API_PREFIX=${API_PREFIX}
       - API_GATEWAY_PORT=${API_GATEWAY_PORT}
