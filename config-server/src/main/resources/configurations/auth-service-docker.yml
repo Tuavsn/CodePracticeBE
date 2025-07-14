@@ -1,6 +1,18 @@
 spring:
   security:
     oauth2:
+  jpa:
+    hibernate:
+      ddl-auto: update
+    showSql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL8Dialect
+  datasource:
+    url: jdbc:mysql://user-mysql:3306/${AUTH_SERVICE_DB}
+    username: ${AUTH_SERVICE_DB_USERNAME}
+    password: ${AUTH_SERVICE_DB_PASSWORD}
+    driverClassName: com.mysql.cj.jdbc.Driver
 
 server:
   port: 9000
@@ -16,4 +28,13 @@ management:
   endpoints:
     web:
       exposure:
-        include: "*"
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG
+    com.example.authserver: DEBUG

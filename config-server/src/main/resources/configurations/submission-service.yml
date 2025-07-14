@@ -15,12 +15,6 @@ eureka:
     serviceUrl:
       defaultZone: http://localhost:8761/eureka
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-
 judge0:
   url: ${JUDGE0_URL}
   judge0_auth_token: ${JUDGE0_AUTH_TOKEN}
@@ -34,3 +28,12 @@ judge0:
   allow_enable_per_process_and_thread_memory_limit: ${ALLOW_ENABLE_PER_PROCESS_AND_THREAD_MEMORY_LIMIT:true}
   max_max_file_size: ${MAX_MAX_FILE_SIZE:4096}
   max_number_of_runs: ${MAX_NUMBER_OF_RUNS:20}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
