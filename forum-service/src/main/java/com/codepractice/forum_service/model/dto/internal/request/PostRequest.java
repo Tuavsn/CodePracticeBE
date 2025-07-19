@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class PostRequest {
-    private long userId;
     private String title;
     private String thumbnail;
     private String content;

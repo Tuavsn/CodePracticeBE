@@ -12,7 +12,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class SubmissionRequest {
-    private String userId;
     private String problemId;
     private String code;
     private SubmitLanguage language;

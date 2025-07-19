@@ -21,45 +21,59 @@ import lombok.AllArgsConstructor;
 @Configuration
 @AllArgsConstructor
 public class SecurityConfig {
-    private final CustomUserDetailService CustomUserDetailService;
-    private final CustomOAuth2UserService customOAuth2UserService;
+	private final CustomUserDetailService customUserDetailService;
+	private final CustomOAuth2UserService customOAuth2UserService;
+	private final static String[] whiteList = {
+		"/login",
+		"/logout",
+		"/register",
+		"forgot-password",
+		"confirm-registration",
+		"reset-password",
+		"/oauth2/**",
+		"/css/**",
+		"/js/**",
+	};
 
-    @Bean
-    @Order(1)
-    public SecurityFilterChain authorizationSecurityFilterChain(HttpSecurity http) throws Exception {
-        OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = OAuth2AuthorizationServerConfigurer
-                .authorizationServer();
-        http
-                .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
-                .with(authorizationServerConfigurer,
-                        (authorizationSever) -> authorizationSever.oidc(Customizer.withDefaults()))
-                .authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
-                .exceptionHandling((exceptions) -> exceptions
-                        .defaultAuthenticationEntryPointFor(
-                                new LoginUrlAuthenticationEntryPoint("/login"),
-                                new MediaTypeRequestMatcher(MediaType.TEXT_HTML)));
-        return http.build();
-    }
+	@Bean
+	@Order(1)
+	public SecurityFilterChain authorizationSecurityFilterChain(HttpSecurity http) throws Exception {
+		OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = OAuth2AuthorizationServerConfigurer
+			.authorizationServer();
+		http
+			.securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
+			.with(authorizationServerConfigurer,
+				(authorizationSever) -> authorizationSever.oidc(Customizer.withDefaults())
+			)
+			.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
+			.exceptionHandling((exceptions) -> exceptions
+				.defaultAuthenticationEntryPointFor(
+						new LoginUrlAuthenticationEntryPoint("/login"),
+						new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
+				)
+			);
+		return http.build();
+	}
 
-    @Bean
-    @Order(2)
-    public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/login", "/oauth2/**", "/css/**", "/js/**", "/error").permitAll().anyRequest()
-                        .authenticated())
-                .oauth2Login(oauth2 -> oauth2
-                        .loginPage("/login").defaultSuccessUrl("/", true)
-                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService)))
-                .formLogin(form -> form
-                        .loginPage("/login").defaultSuccessUrl("/", true))
-                .userDetailsService(CustomUserDetailService);
+	@Bean
+	@Order(2)
+	public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+		http
+			.authorizeHttpRequests(authorize -> authorize
+					.requestMatchers(whiteList).permitAll()
+					.anyRequest().authenticated())
+			.oauth2Login(oauth2 -> oauth2
+					.loginPage("/login").defaultSuccessUrl("/", true)
+					.userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService)))
+			.formLogin(form -> form
+					.loginPage("/login").defaultSuccessUrl("/", true))
+			.userDetailsService(customUserDetailService);
 
-        return http.build();
-    }
+		return http.build();
+	}
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 }

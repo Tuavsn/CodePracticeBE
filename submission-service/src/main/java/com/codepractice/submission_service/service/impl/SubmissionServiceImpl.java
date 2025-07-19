@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.codepractice.common_lib.enums.ErrorCode;
 import com.codepractice.common_lib.exceptions.AppException;
+import com.codepractice.common_lib.utils.UserUtil;
 import com.codepractice.submission_service.constants.Judge0Configurations;
 import com.codepractice.submission_service.enums.ExecuteType;
 import com.codepractice.submission_service.enums.SubmitResult;
@@ -37,6 +38,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     private final ProblemServiceClient problemService;
     private final SubmissionRepository submissionRepository;
     private final ResultRepository resultRepository;
+    private final UserUtil userUtil;
 
     @Override
     public List<SubmissionResponse> getSubmissions(String userId, String problemId) {
@@ -122,9 +124,13 @@ public class SubmissionServiceImpl implements SubmissionService {
 
     @Transactional
     private Submission createSubmission(SubmissionRequest solution) {
+        Long userId = Long.parseLong(userUtil.getCurrentUserId());
+
+        log.info("Creating new submission for user ID: {}", userId);
+
         return submissionRepository.save(
                 Submission.builder()
-                        .userId(solution.getUserId())
+                        .userId(userId)
                         .problemId(solution.getProblemId())
                         .language(solution.getLanguage())
                         .result(SubmitResult.PROCESSING)
@@ -155,6 +161,7 @@ public class SubmissionServiceImpl implements SubmissionService {
                 .id(source.getId())
                 .userId(source.getUserId())
                 .problemId(source.getProblemId())
+                .language(source.getLanguage())
                 .code(source.getCode())
                 .result(source.getResult())
                 .time(source.getTime())

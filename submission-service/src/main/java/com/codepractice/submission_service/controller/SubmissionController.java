@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,6 +29,7 @@ public class SubmissionController {
     private final SubmissionService submissionService;
 
     @PostMapping("/execute")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<ApiResponse<SubmissionResponse>> execute(@RequestBody SubmissionRequest solutions,
             @RequestParam ExecuteType type) {
         SubmissionResponse result = submissionService.execute(solutions, type);
@@ -36,6 +38,7 @@ public class SubmissionController {
     }
 
     @GetMapping("/getAll")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<ApiResponse<List<SubmissionResponse>>> getSubmissions(@RequestParam String userId,
             @RequestParam String problemId) {
         List<SubmissionResponse> submissions = submissionService.getSubmissions(userId, problemId);
@@ -46,6 +49,7 @@ public class SubmissionController {
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<ApiResponse<List<ResultResponse>>> getResultBySubmissionId(@PathVariable String id) {
         List<ResultResponse> results = submissionService.getResultBySubmissionId(id);
         return ResponseEntity.ok(ApiResponse.success(

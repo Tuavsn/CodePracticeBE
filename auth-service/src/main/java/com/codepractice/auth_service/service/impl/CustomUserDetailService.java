@@ -1,38 +1,35 @@
 package com.codepractice.auth_service.service.impl;
 
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.codepractice.auth_service.model.dto.external.UserResponse;
-import com.codepractice.auth_service.service.client.UserServiceClient;
+import com.codepractice.auth_service.enums.AccountStatus;
+import com.codepractice.auth_service.model.entity.User;
+import com.codepractice.auth_service.service.UserService;
+import com.codepractice.common_lib.enums.ErrorCode;
+import com.codepractice.common_lib.exceptions.AppException;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailService implements UserDetailsService {
-    private final UserServiceClient userServiceClient;
+    private final UserService userService;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserResponse user = userServiceClient.getUserById(null);
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userService.getByEmail(email);
 
         if (user == null) {
-            throw new UsernameNotFoundException("Username not found: " + username);
+            throw new UsernameNotFoundException("User not found: " + email);
         }
 
-        return User.builder()
-                .username(user.getUsername())
-                .password(user.getPassword())
-                .authorities(new SimpleGrantedAuthority("ROLE_" + user.getRole()))
-                .accountExpired(false)
-                .accountLocked(false)
-                .credentialsExpired(false)
-                .disabled(false)
-                .build();
+        if (user.getStatus() != AccountStatus.ACTIVE) {
+            throw new AppException(ErrorCode.INACTIVE_ACCOUNT);
+        }
+
+        return user;
     }
 }

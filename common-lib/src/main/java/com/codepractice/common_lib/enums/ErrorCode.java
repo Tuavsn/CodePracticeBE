@@ -16,7 +16,15 @@ public enum ErrorCode {
   COMMENT_NOT_FOUND(1005, "Comment not found", HttpStatus.NOT_FOUND),
   PROBLEM_NOT_FOUND(1006, "Problem not found", HttpStatus.NOT_FOUND),
   UNSUPPORTED_EXECUTE_TYPE(1007, "Unsupported execute type", HttpStatus.BAD_REQUEST),
-  MISMATCH_BETWEEN_SAMPLETEST_AND_RESULT(1008, "Mismatch between Testcases and results", HttpStatus.INTERNAL_SERVER_ERROR);
+  MISMATCH_BETWEEN_SAMPLETEST_AND_RESULT(1008, "Mismatch between Testcases and results", HttpStatus.INTERNAL_SERVER_ERROR),
+  INACTIVE_ACCOUNT(1009, "Account need to be active", HttpStatus.BAD_REQUEST),
+  INVALID_OTP(1010, "Invalid OTP", HttpStatus.BAD_REQUEST),
+  INVALID_PASSWORD_CONFIRM(1011, "Password do not match", HttpStatus.BAD_REQUEST),
+  MISSING_REQUIRED_FIELDS(1012, "Missing required fields", HttpStatus.BAD_REQUEST),
+  INVALID_REQUEST(1013, "Invalid request", HttpStatus.BAD_REQUEST),
+  WEAK_PASSWORD(1014, "Weak password", HttpStatus.BAD_REQUEST),
+  ACCOUNT_ALREADY_ACTIVE(1015, "Account already active", HttpStatus.BAD_REQUEST),
+  INVALID_AUTHOR(1016, "Invalid author", HttpStatus.BAD_REQUEST);
 
   private final int code;
   private final String message;

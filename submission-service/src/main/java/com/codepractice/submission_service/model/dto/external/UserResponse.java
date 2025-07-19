@@ -9,10 +9,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserResponse {
 	private Long id;
-	private String title;
+	private String email;
 	private String username;
-	private String password;
 	private String role;
 	private String achievement;
-	private String status;
 }

@@ -18,7 +18,7 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = false)
 @SuperBuilder
 public class Submission extends BaseEntity {
-    private String userId;
+    private Long userId;
     private String problemId;
     private String code;
     private SubmitLanguage language;

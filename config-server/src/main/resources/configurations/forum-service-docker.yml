@@ -1,4 +1,10 @@
 spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: ${DOMAIN}/oauth2/jwks
+          issuer-uri: ${DOMAIN}
   data:
     mongodb:
       uri: ${FORUM_SERVICE_DB_URL}

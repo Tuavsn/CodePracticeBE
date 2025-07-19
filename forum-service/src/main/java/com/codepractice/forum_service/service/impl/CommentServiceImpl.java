@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.codepractice.common_lib.enums.ErrorCode;
 import com.codepractice.common_lib.exceptions.AppException;
+import com.codepractice.common_lib.utils.UserUtil;
 import com.codepractice.forum_service.model.dto.external.UserResponse;
 import com.codepractice.forum_service.model.dto.internal.request.CommentRequest;
 import com.codepractice.forum_service.model.dto.internal.response.CommentResponse;
@@ -28,14 +29,17 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final UserServiceClient userService;
+    private final UserUtil userUtil;
 
     @Override
     @Transactional
     public CommentResponse save(CommentRequest request) {
-        log.info("Creating new comment for post ID: {} by user ID: {}", request.getPostId(), request.getUserId());
+        Long userId = Long.parseLong(userUtil.getCurrentUserId());
+
+        log.info("Creating new comment for post ID: {} by user ID: {}", request.getPostId(), userId);
 
         try {
-            UserResponse user = userService.getUserById(request.getUserId());
+            UserResponse user = userService.getUserById(userId);
 
             Post existedPost = postRepository.findById(request.getPostId()).orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND));
             
@@ -58,7 +62,7 @@ public class CommentServiceImpl implements CommentService {
             return createDTO(saveComment);
 
         } catch (Exception e) {
-            log.error("Error creating comment for post ID: {} by user ID: {}", request.getPostId(), request.getUserId(), e);
+            log.error("Error creating comment for post ID: {} by user ID: {}", request.getPostId(), userId, e);
             throw e;
         }
     }
@@ -66,6 +70,8 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public CommentResponse update(String id, CommentRequest request) {
+        Long userId = Long.parseLong(userUtil.getCurrentUserId());
+
         log.info("Updating comment with ID: {}", id);
 
         try {
@@ -74,6 +80,10 @@ public class CommentServiceImpl implements CommentService {
                         log.error("Comment not found with ID: {}", id);
                         return new AppException(ErrorCode.COMMENT_NOT_FOUND);
                     });
+
+            if (existedComment.getAuthor().getUserId() != userId) {
+                throw new AppException(ErrorCode.INVALID_AUTHOR);
+            }
 
             updateComment(request, existedComment);
             Comment updatedComment = commentRepository.save(existedComment);
@@ -90,11 +100,18 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public void delete(String id) {
+        Long userId = Long.parseLong(userUtil.getCurrentUserId());
+
         log.info("Soft deleting comment ID: {}", id);
 
         try {
             Comment existedComment = commentRepository.findById(id)
                     .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_FOUND));
+
+            if (existedComment.getAuthor().getUserId() != userId) {
+                throw new AppException(ErrorCode.INVALID_AUTHOR);
+            }
+
             existedComment.setDeleted(true);
             commentRepository.save(existedComment);
 
@@ -107,11 +124,17 @@ public class CommentServiceImpl implements CommentService {
     @Override
     @Transactional
     public void hardDelete(String id) {
+        Long userId = Long.parseLong(userUtil.getCurrentUserId());
+
         log.warn("Hard deleting comment ID: {}", id);
 
         try {
             Comment existedComment = commentRepository.findById(id)
                     .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_FOUND));
+
+            if (existedComment.getAuthor().getUserId() != userId) {
+                throw new AppException(ErrorCode.INVALID_AUTHOR);
+            }
 
             commentRepository.delete(existedComment);
 

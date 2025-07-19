@@ -4,17 +4,15 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.codepractice.common_lib.response.ApiResponse;
 import com.codepractice.user_service.model.dto.response.UserResponse;
-import com.codepractice.user_service.model.entity.User;
 import com.codepractice.user_service.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -25,21 +23,8 @@ import lombok.RequiredArgsConstructor;
 public class UserInterfaceController {
     private final UserService userService;
 
-    @PutMapping
-    public ResponseEntity<ApiResponse<UserResponse>> updateUser(@RequestBody User user) {
-        UserResponse updatedUser = userService.update(user);
-        return ResponseEntity.ok(ApiResponse.success(updatedUser, "User updated successfully", HttpStatus.OK.value()));
-    }
-
-    @PutMapping("/{id}/block")
-    public ResponseEntity<ApiResponse<String>> blockUser(@PathVariable long id) {
-        userService.block(id);
-        return ResponseEntity
-                .ok(ApiResponse.success("User blocked successfully", "User blocked successfully",
-                        HttpStatus.OK.value()));
-    }
-
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<String>> deleteUser(@PathVariable long id) {
         userService.hardDelete(id);
         return ResponseEntity

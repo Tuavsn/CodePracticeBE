@@ -8,9 +8,6 @@ import org.springframework.stereotype.Service;
 import com.codepractice.common_lib.enums.ErrorCode;
 import com.codepractice.common_lib.exceptions.AppException;
 import com.codepractice.user_service.enums.AccountAchievement;
-import com.codepractice.user_service.enums.AccountRole;
-import com.codepractice.user_service.enums.AccountStatus;
-import com.codepractice.user_service.enums.AuthStrategy;
 import com.codepractice.user_service.model.dto.request.UserRequest;
 import com.codepractice.user_service.model.dto.response.UserResponse;
 import com.codepractice.user_service.model.entity.User;
@@ -43,14 +40,12 @@ public class UserServiceImpl implements UserService {
 
 		User savedUser = userRepository.save(
 				User.builder()
+						.id(request.getId())
 						.email(request.getEmail())
 						.username(request.getUsername())
-						.password(request.getHashPassword())
 						.totalSubmissionPoint(0)
-						.role(AccountRole.USER)
+						.role(request.getRole())
 						.achievement(AccountAchievement.BEGINNER)
-						.authStrategy(AuthStrategy.LOCAL)
-						.status(AccountStatus.ACTIVE)
 						.build());
 
 		log.info("User saved successfully with ID: {} and email: {}", savedUser.getId(), savedUser.getEmail());
@@ -60,7 +55,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	@Transactional
-	public UserResponse update(User user) {
+	public UserResponse update(UserRequest user) {
 		log.info("Attempting to update user with email: {}", user.getEmail());
 
 		User existUser = userRepository.findByEmail(user.getEmail())
@@ -69,25 +64,9 @@ public class UserServiceImpl implements UserService {
 					return new AppException(ErrorCode.USER_NOT_FOUND);
 				});
 
-		User updatedUser = userRepository.save(updateUserDetails(existUser));
+		User updatedUser = userRepository.save(updateUserDetails(user, existUser));
 		log.info("User updated successfully with ID: {}", updatedUser.getId());
 		return createDTO(updatedUser);
-	}
-
-	@Override
-	@Transactional
-	public void block(Long id) {
-		log.info("Attempting to block user with ID: {}", id);
-
-		User user = userRepository.findById(id).orElseThrow(() -> {
-			log.error("User not found with ID: {}", id);
-			return new AppException(ErrorCode.USER_NOT_FOUND);
-		});
-
-		user.setStatus(AccountStatus.BLOCKED);
-		userRepository.save(user);
-
-		log.warn("User blocked successfully - ID: {}, Email: {}", user.getId(), user.getEmail());
 	}
 
 	@Override
@@ -107,11 +86,11 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public List<UserResponse> getAll() {
-		log.debug("Retrieving all active users");
+		log.debug("Retrieving all users");
 
-		List<User> users = userRepository.findAllByStatus(AccountStatus.ACTIVE);
+		List<User> users = userRepository.findAll();
 
-		log.debug("Retrieved {} active users", users.size());
+		log.debug("Retrieved {} users", users.size());
 
 		return users.stream().map(user -> createDTO(user)).toList();
 	}
@@ -128,44 +107,37 @@ public class UserServiceImpl implements UserService {
 		return createDTO(user);
 	}
 
-	@Override
-	public UserResponse getByEmail(String email) {
-		log.debug("Retrieving user by email: {}", email);
+	private User updateUserDetails(UserRequest source, User target) {
+		if (source.getAvatar() != null) {
+			target.setAvatar(source.getAvatar());
+		}
 
-		User user = userRepository.findByEmail(email).orElseThrow(() -> {
-			log.error("User not found with email: {}", email);
-			return new AppException(ErrorCode.USER_NOT_FOUND);
-		});
+		if (source.getPhone() != null) {
+			target.setPhone(source.getPhone());
+		}
 
-		return createDTO(user);
-	}
+		if (source.getAddress() != null) {
+			target.setAddress(source.getAddress());
+		}
 
-	@Override
-	public UserResponse getByUsername(String username) {
-		log.debug("Retrieving user by username: {}", username);
+		if (source.getBio() != null) {
+			target.setBio(source.getBio());
+		}
 
-		User user = userRepository.findByUsername(username).orElseThrow(() -> {
-			log.error("User not found with username: {}", username);
-			return new AppException(ErrorCode.USER_NOT_FOUND);
-		});
-
-		return createDTO(user);
-	}
-
-	private User updateUserDetails(User user) {
-		log.debug("Updating user details for user ID: {}", user.getId());
-		return user;
+		return target;
 	}
 
 	private UserResponse createDTO(User source) {
-		return UserResponse.builder()
-				.id(source.getId())
-				.email(source.getEmail())
-				.username(source.getUsername())
-				.avatar(source.getAvatar())
-				.role(source.getRole())
-				.achievement(source.getAchievement())
-				.status(source.getStatus())
-				.build();
+		if (source != null) {
+			return UserResponse.builder()
+					.id(source.getId())
+					.email(source.getEmail())
+					.username(source.getUsername())
+					.avatar(source.getAvatar())
+					.role(source.getRole())
+					.achievement(source.getAchievement())
+					.build();
+		}
+		return null;
 	}
 }
