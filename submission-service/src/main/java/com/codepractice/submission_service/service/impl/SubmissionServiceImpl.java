@@ -133,6 +133,7 @@ public class SubmissionServiceImpl implements SubmissionService {
                         .userId(userId)
                         .problemId(solution.getProblemId())
                         .language(solution.getLanguage())
+                        .code(solution.getCode())
                         .result(SubmitResult.PROCESSING)
                         .time(0)
                         .memory(0)
