@@ -24,12 +24,12 @@ public class SecurityConfig {
 	private final CustomUserDetailService customUserDetailService;
 	private final CustomOAuth2UserService customOAuth2UserService;
 	private final static String[] whiteList = {
-		"/login",
-		"/logout",
-		"/register",
-		"forgot-password",
-		"confirm-registration",
-		"reset-password",
+		"/login/**",
+		"/logout/**",
+		"/register/**",
+		"/forgot-password/**",
+		"/confirm-registration/**",
+		"/reset-password/**",
 		"/oauth2/**",
 		"/css/**",
 		"/js/**",
