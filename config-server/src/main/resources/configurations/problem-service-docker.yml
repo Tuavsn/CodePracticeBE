@@ -3,8 +3,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: ${DOMAIN}/oauth2/jwks
-          issuer-uri: ${DOMAIN}
+          jwk-set-uri: http://auth-service:9000/oauth2/jwks
+          issuer-uri: http://auth-service:9000
   data:
     mongodb:
       uri: ${PROBLEM_SERVICE_DB_URL}
