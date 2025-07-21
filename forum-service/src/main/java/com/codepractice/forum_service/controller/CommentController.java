@@ -54,14 +54,6 @@ public class CommentController {
                 "Comment deleted successfully", "Comment deleted successfully", HttpStatus.OK.value()));
     }
 
-    @GetMapping("/post/{postId}")
-    public ResponseEntity<ApiResponse<List<CommentResponse>>> getCommentsByPost(
-            @PathVariable("postId") String postId) {
-        List<CommentResponse> comments = commentService.getAllByPostId(postId);
-        return ResponseEntity.ok(
-                ApiResponse.success(comments, "Comments for post retrieved successfully", HttpStatus.OK.value()));
-    }
-
     @GetMapping("/user/{userId}")
     public ResponseEntity<ApiResponse<List<CommentResponse>>> getCommentsByUser(
             @PathVariable("userId") String userId) {

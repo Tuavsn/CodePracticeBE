@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.codepractice.common_lib.response.ApiResponse;
 import com.codepractice.problem_service.model.dto.internal.request.ProblemRequest;
+import com.codepractice.problem_service.model.dto.internal.response.CommentResponse;
 import com.codepractice.problem_service.model.dto.internal.response.ProblemResponse;
+import com.codepractice.problem_service.service.CommentService;
 import com.codepractice.problem_service.service.ProblemService;
 
 import lombok.RequiredArgsConstructor;
@@ -26,7 +28,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProblemInterfaceController {
     private final ProblemService problemService;
+    private final CommentService commentService;
 
+    // Problem
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<ProblemResponse>> createProblem(@RequestBody ProblemRequest problem) {
@@ -75,5 +79,14 @@ public class ProblemInterfaceController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(ApiResponse.error("Problem not found", HttpStatus.NOT_FOUND.value()));
         }
+    }
+
+    // Comment
+    @GetMapping("/{id}/comments")
+    public ResponseEntity<ApiResponse<List<CommentResponse>>> getCommentsByProblem(
+            @PathVariable("id") String problemId) {
+        List<CommentResponse> comments = commentService.getAllByProblemId(problemId);
+        return ResponseEntity.ok(
+                ApiResponse.success(comments, "Comments for post retrieved successfully", HttpStatus.OK.value()));
     }
 }

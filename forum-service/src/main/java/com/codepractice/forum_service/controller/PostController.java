@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.codepractice.common_lib.response.ApiResponse;
 import com.codepractice.forum_service.model.dto.internal.request.PostRequest;
+import com.codepractice.forum_service.model.dto.internal.response.CommentResponse;
 import com.codepractice.forum_service.model.dto.internal.response.PostResponse;
+import com.codepractice.forum_service.service.CommentService;
 import com.codepractice.forum_service.service.PostService;
 
 import lombok.RequiredArgsConstructor;
@@ -26,7 +28,9 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
+    private final CommentService commentService;
 
+    // Post
     @PostMapping
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<ApiResponse<PostResponse>> createPost(@RequestBody PostRequest post) {
@@ -69,5 +73,14 @@ public class PostController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(ApiResponse.error("Post not found", HttpStatus.NOT_FOUND.value()));
         }
+    }
+
+    // Comment
+    @GetMapping("/{id}/comments")
+    public ResponseEntity<ApiResponse<List<CommentResponse>>> getCommentsByPost(
+            @PathVariable("id") String postId) {
+        List<CommentResponse> comments = commentService.getAllByPostId(postId);
+        return ResponseEntity.ok(
+                ApiResponse.success(comments, "Comments for post retrieved successfully", HttpStatus.OK.value()));
     }
 }

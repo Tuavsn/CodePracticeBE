@@ -22,7 +22,7 @@ import com.codepractice.problem_service.service.CommentService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/comments")
+@RequestMapping("/problems/comments")
 @RequiredArgsConstructor
 public class CommentController {
     private final CommentService commentService;
@@ -52,14 +52,6 @@ public class CommentController {
         commentService.delete(id);
         return ResponseEntity.ok(ApiResponse.success(
                 "Comment deleted successfully", "Comment deleted successfully", HttpStatus.OK.value()));
-    }
-
-    @GetMapping("/post/{postId}")
-    public ResponseEntity<ApiResponse<List<CommentResponse>>> getCommentsByPost(
-            @PathVariable("postId") String postId) {
-        List<CommentResponse> comments = commentService.getAllByProblemId(postId);
-        return ResponseEntity.ok(
-                ApiResponse.success(comments, "Comments for post retrieved successfully", HttpStatus.OK.value()));
     }
 
     @GetMapping("/user/{userId}")

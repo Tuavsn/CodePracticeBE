@@ -22,7 +22,7 @@ spring:
             - id: AUTH-SERVICE
               uri: lb://AUTH-SERVICE
               predicates:
-                - Path=/login,/register,/forgot-password,/confirm-registration,/reset-password
+                - Path=/login/**,/register/**,/forgot-password/**,/confirm-registration/**,/reset-password/**
               filters:
                 - StripPrefix=0
             
@@ -38,7 +38,7 @@ spring:
             - id: FORUM-SERVICE
               uri: lb://FORUM-SERVICE
               predicates:
-                - Path=/api/v1/forums/**
+                - Path=/api/v1/posts/**
               filters:
                 - StripPrefix=2  # Removes /api/v1/forum-service
             
