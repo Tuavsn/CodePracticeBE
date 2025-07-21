@@ -45,7 +45,7 @@ spring:
 
 server:
   port: 9000
-  forward-headers-strategy: framework
+  use-forward-headers: true
 
 eureka:
   instance:

@@ -14,6 +14,7 @@ public class SecurityConfig {
     private final static String[] whiteList = {
         "/actuator/**",
         "/public/**",
+        "/users/internal/**"
     };
 
     private final static String[] getWhiteList = {

@@ -24,6 +24,7 @@ spring:
               predicates:
                 - Path=/login/**,/register/**,/forgot-password/**,/confirm-registration/**,/reset-password/**
               filters:
+                - PreserveHostHeader
                 - StripPrefix=0
             
             # USER ROUTE  
@@ -60,6 +61,7 @@ spring:
 
 server:
   port: 8080
+  forward-headers-strategy: framework
 
 management:
   endpoints:

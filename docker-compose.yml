@@ -1,8 +1,8 @@
 services:
   config-server:
     build: ./config-server
-    ports:
-      - "8888:8888"
+    # ports:
+    #   - "8888:8888"
     environment:
       - SPRING_PROFILES_ACTIVE=native
     networks:
@@ -16,8 +16,8 @@ services:
 
   eureka-server:
     build: ./eureka-server
-    ports:
-      - "8761:8761"
+    # ports:
+    #   - "8761:8761"
     depends_on:
       config-server:
         condition: service_healthy
@@ -53,8 +53,8 @@ services:
 
   auth-service:
     build: ./auth-service
-    ports:
-      - "9000:9000"
+    # ports:
+    #   - "9000:9000"
     depends_on:
       config-server:
         condition: service_healthy
@@ -96,8 +96,8 @@ services:
 
   user-service:
     build: ./user-service
-    ports:
-      - "9001:9001"
+    # ports:
+    #   - "9001:9001"
     depends_on:
       config-server:
         condition: service_healthy
@@ -116,8 +116,8 @@ services:
 
   forum-service:
     build: ./forum-service
-    ports:
-      - "9002:9002"
+    # ports:
+    #   - "9002:9002"
     depends_on:
       config-server:
         condition: service_healthy
@@ -133,8 +133,8 @@ services:
 
   problem-service:
     build: ./problem-service
-    ports:
-      - "9003:9003"
+    # ports:
+    #   - "9003:9003"
     depends_on:
       config-server:
         condition: service_healthy
@@ -150,8 +150,8 @@ services:
 
   submission-service:
     build: ./submission-service
-    ports:
-      - "9004:9004"
+    # ports:
+    #   - "9004:9004"
     depends_on:
       config-server:
         condition: service_healthy

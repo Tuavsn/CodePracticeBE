@@ -14,8 +14,10 @@ import com.codepractice.auth_service.model.dto.internal.RegisterRequest;
 import com.codepractice.auth_service.service.AuthService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
+@Slf4j
 @RequiredArgsConstructor
 public class AuthController {
     private final AuthService authService;
@@ -24,6 +26,8 @@ public class AuthController {
     public String loginPage(@RequestParam(value = "error", required = false) String error,
             @RequestParam(value = "logout", required = false) String logout,
             Model model) {
+        log.info("Login page accessed with error: {}, logout: {}", error, logout);
+        
         if (error != null) {
             model.addAttribute("error", "Invalid username or password");
         }
@@ -36,6 +40,7 @@ public class AuthController {
 
     @GetMapping("/register")
     public String registerPage(Model model) {
+        log.info("Register page accessed");
         model.addAttribute("registerRequest", new RegisterRequest());
         return "register";
     }
@@ -43,19 +48,50 @@ public class AuthController {
     @PostMapping("/register")
     public String register(@ModelAttribute RegisterRequest registerRequest,
             BindingResult bindingResult,
-            RedirectAttributes redirectAttributes) {
+            RedirectAttributes redirectAttributes,
+            Model model) {
+        log.info("Register POST request received for email: {}", registerRequest.getEmail());
+        
+        if (registerRequest.getUsername() == null || registerRequest.getUsername().trim().isEmpty()) {
+            bindingResult.rejectValue("username", "error.username", "Username is required");
+        }
+        
+        if (registerRequest.getEmail() == null || registerRequest.getEmail().trim().isEmpty()) {
+            bindingResult.rejectValue("email", "error.email", "Email is required");
+        }
+        
+        if (registerRequest.getPassword() == null || registerRequest.getPassword().trim().isEmpty()) {
+            bindingResult.rejectValue("password", "error.password", "Password is required");
+        }
+        
+        if (registerRequest.getConfirmPassword() == null || 
+            !registerRequest.getConfirmPassword().equals(registerRequest.getPassword())) {
+            bindingResult.rejectValue("confirmPassword", "error.confirmPassword", 
+                "Passwords do not match");
+        }
+
         if (bindingResult.hasErrors()) {
+            log.warn("Validation errors in registration: {}", bindingResult.getAllErrors());
+            model.addAttribute("registerRequest", registerRequest);
             return "register";
         }
 
         try {
             authService.register(registerRequest);
-            redirectAttributes.addFlashAttribute("message", "Registration successful! Please check your email and verify OTP.");
+            log.info("Registration successful for email: {}", registerRequest.getEmail());
+            
+            redirectAttributes.addFlashAttribute("message", 
+                "Registration successful! Please check your email and verify OTP.");
             redirectAttributes.addFlashAttribute("email", registerRequest.getEmail());
             return "redirect:/confirm-registration";
+            
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/register";
+            log.error("Registration failed for email: {}, error: {}", 
+                registerRequest.getEmail(), e.getMessage(), e);
+            
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("registerRequest", registerRequest);
+            return "register"; // Trả về trang register với lỗi thay vì redirect
         }
     }
 
@@ -63,6 +99,8 @@ public class AuthController {
     @GetMapping("/confirm-registration")
     public String confirmRegistrationPage(@RequestParam(value = "email", required = false) String email,
             Model model) {
+        log.info("Confirm registration page accessed for email: {}", email);
+        
         if (email != null) {
             model.addAttribute("email", email);
         }
@@ -73,11 +111,20 @@ public class AuthController {
     public String confirmRegistration(@RequestParam String email,
             @RequestParam String otp,
             RedirectAttributes redirectAttributes) {
+        log.info("Confirm registration POST request for email: {}", email);
+        
         try {
             authService.confirmRegistration(email, otp);
-            redirectAttributes.addFlashAttribute("message", "Registration confirmed successfully! Please login.");
+            log.info("Registration confirmed successfully for email: {}", email);
+            
+            redirectAttributes.addFlashAttribute("message", 
+                "Registration confirmed successfully! Please login.");
             return "redirect:/login";
+            
         } catch (Exception e) {
+            log.error("Registration confirmation failed for email: {}, error: {}", 
+                email, e.getMessage(), e);
+            
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             redirectAttributes.addFlashAttribute("email", email);
             return "redirect:/confirm-registration";

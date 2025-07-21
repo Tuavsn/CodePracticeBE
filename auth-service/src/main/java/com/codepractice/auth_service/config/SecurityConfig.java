@@ -33,6 +33,7 @@ public class SecurityConfig {
 		"/oauth2/**",
 		"/css/**",
 		"/js/**",
+		"/error/**",
 	};
 
 	@Bean
