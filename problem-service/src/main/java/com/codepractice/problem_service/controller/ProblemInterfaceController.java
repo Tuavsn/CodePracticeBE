@@ -57,7 +57,6 @@ public class ProblemInterfaceController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<ApiResponse<List<ProblemResponse>>> getAllProblems() {
         List<ProblemResponse> problems = problemService.getAll();
         return ResponseEntity.ok(ApiResponse.success(
@@ -68,7 +67,6 @@ public class ProblemInterfaceController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<ApiResponse<ProblemResponse>> getProblemById(@PathVariable String id) {
         ProblemResponse problem = problemService.getById(id);
         if (problem != null) {

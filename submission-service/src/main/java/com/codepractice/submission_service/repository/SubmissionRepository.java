@@ -9,5 +9,5 @@ import com.codepractice.submission_service.model.entity.Submission;
 
 @Repository
 public interface SubmissionRepository extends MongoRepository<Submission, String> {
-    public List<Submission> findAllByUserIdAndProblemId(String userId, String problemId);
+    public List<Submission> findAllByUserIdAndProblemId(Long userId, String problemId);
 }

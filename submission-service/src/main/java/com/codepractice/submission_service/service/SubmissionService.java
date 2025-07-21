@@ -8,9 +8,9 @@ import com.codepractice.submission_service.model.dto.internal.response.ResultRes
 import com.codepractice.submission_service.model.dto.internal.response.SubmissionResponse;
 
 public interface SubmissionService {
-        public SubmissionResponse execute(SubmissionRequest solutions, ExecuteType type);
+    public SubmissionResponse execute(SubmissionRequest solutions, ExecuteType type);
 
-    public List<SubmissionResponse> getSubmissions(String userId, String problemId);
+    public List<SubmissionResponse> getSubmissions(String problemId);
 
     public List<ResultResponse> getResultBySubmissionId(String submissionId);
 }

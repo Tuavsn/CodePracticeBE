@@ -41,7 +41,11 @@ public class SubmissionServiceImpl implements SubmissionService {
     private final UserUtil userUtil;
 
     @Override
-    public List<SubmissionResponse> getSubmissions(String userId, String problemId) {
+    public List<SubmissionResponse> getSubmissions(String problemId) {
+        Long userId = Long.parseLong(userUtil.getCurrentUserId());
+
+        log.info("Retrieve submissions for user ID: {}", userId);
+        
         return submissionRepository.findAllByUserIdAndProblemId(userId, problemId).stream()
                 .map(submission -> createSubmissionDTO(submission)).toList();
     }

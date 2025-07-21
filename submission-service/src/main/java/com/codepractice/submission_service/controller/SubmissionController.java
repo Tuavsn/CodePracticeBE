@@ -39,9 +39,8 @@ public class SubmissionController {
 
     @GetMapping("/getAll")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<ApiResponse<List<SubmissionResponse>>> getSubmissions(@RequestParam String userId,
-            @RequestParam String problemId) {
-        List<SubmissionResponse> submissions = submissionService.getSubmissions(userId, problemId);
+    public ResponseEntity<ApiResponse<List<SubmissionResponse>>> getSubmissions(@RequestParam String problemId) {
+        List<SubmissionResponse> submissions = submissionService.getSubmissions(problemId);
         return ResponseEntity.ok(ApiResponse.success(
                 submissions,
                 "Problems retrieved successfully",
