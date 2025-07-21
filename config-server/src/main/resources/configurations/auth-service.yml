@@ -42,6 +42,12 @@ spring:
           starttls:
             enable: true
 
+auth:
+  server:
+    clientId: ${CLIENTID:gateway-client}
+    secret: ${CLIENT_SECRET:secret}
+    gatewayClientUrl: ${GATEWAY_CLIENT_URL:http://localhost:8080}
+    authServerUrl: ${AUTH_SERVER_URL:http://localhost:9000}
 
 server:
   port: 9000
