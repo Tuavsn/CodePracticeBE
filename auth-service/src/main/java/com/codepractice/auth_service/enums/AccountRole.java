@@ -1,13 +1,13 @@
-package com.codepractice.user_service.enums;
+package com.codepractice.auth_service.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public enum AuthStrategy {
-  LOCAL("LOCAL", "Local"),
-  GOOGLE("GOOGLE", "Google");
+public enum AccountRole {
+  SYSTEM_ADMIN("SYSTEM_ADMIN", "System Admin"),
+  USER("USER", "User");
 
   private final String value;
   private final String displayName;

@@ -2,7 +2,6 @@ package com.codepractice.user_service.model.dto.response;
 
 import com.codepractice.user_service.enums.AccountAchievement;
 import com.codepractice.user_service.enums.AccountRole;
-import com.codepractice.user_service.enums.AccountStatus;
 
 import lombok.Builder;
 import lombok.Data;
@@ -16,5 +15,4 @@ public class UserResponse {
     private String avatar;
     private AccountRole role;
     private AccountAchievement achievement;
-    private AccountStatus status;
 }

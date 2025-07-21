@@ -1,4 +1,4 @@
-package com.codepractice.user_service.enums;
+package com.codepractice.auth_service.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

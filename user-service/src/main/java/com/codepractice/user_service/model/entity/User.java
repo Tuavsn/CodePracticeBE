@@ -8,15 +8,11 @@ import org.hibernate.annotations.UpdateTimestamp;
 import com.codepractice.user_service.enums.AccountAchievement;
 import com.codepractice.user_service.enums.AccountGender;
 import com.codepractice.user_service.enums.AccountRole;
-import com.codepractice.user_service.enums.AccountStatus;
-import com.codepractice.user_service.enums.AuthStrategy;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -30,7 +26,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class User {
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   @Column(unique = true, nullable = false)
@@ -38,9 +33,6 @@ public class User {
 
   @Column(nullable = false)
   private String username;
-
-  @Column(nullable = false)
-  private String password;
 
   @Column(columnDefinition = "LONGTEXT")
   private String avatar;
@@ -66,13 +58,6 @@ public class User {
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
   private AccountAchievement achievement;
-
-  @Enumerated(EnumType.STRING)
-  private AuthStrategy authStrategy;
-
-  @Column(nullable = false)
-  @Enumerated(EnumType.STRING)
-  private AccountStatus status;
 
   @CreationTimestamp
   @Column(name = "created_at", nullable = false, updatable = false)

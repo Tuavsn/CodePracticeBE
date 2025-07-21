@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SubmissionResponse {
     private String id;
-    private String userId;
+    private Long userId;
     private String problemId;
     private String code;
     private SubmitLanguage language;

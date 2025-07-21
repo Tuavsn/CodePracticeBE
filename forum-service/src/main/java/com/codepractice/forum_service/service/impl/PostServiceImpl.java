@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.codepractice.common_lib.enums.ErrorCode;
 import com.codepractice.common_lib.exceptions.AppException;
+import com.codepractice.common_lib.utils.UserUtil;
 import com.codepractice.forum_service.model.dto.external.UserResponse;
 import com.codepractice.forum_service.model.dto.internal.request.PostRequest;
 import com.codepractice.forum_service.model.dto.internal.response.PostResponse;
@@ -25,14 +26,17 @@ import lombok.extern.slf4j.Slf4j;
 public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final UserServiceClient userService;
+    private final UserUtil userUtil;
 
     @Override
     @Transactional
     public PostResponse save(PostRequest request) {
-        log.info("Creating new post for user ID: {}", request.getUserId());
+        Long userId = Long.parseLong(userUtil.getCurrentUserId());
+
+        log.info("Creating new post for user ID: {}", userId);
 
         try {
-            UserResponse user = userService.getUserById(request.getUserId());
+            UserResponse user = userService.getUserById(userId);
 
             Post savedPost = postRepository.save(
                     Post.builder()
@@ -54,7 +58,7 @@ public class PostServiceImpl implements PostService {
             return createDTO(savedPost);
 
         } catch (Exception e) {
-            log.error("Error creating post for user ID: {}", request.getUserId(), e);
+            log.error("Error creating post for user ID: {}", userId, e);
             throw e;
         }
     }
@@ -62,6 +66,8 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public PostResponse update(String id, PostRequest request) {
+        Long userId = Long.parseLong(userUtil.getCurrentUserId());
+
         log.info("Updating post with ID: {}", id);
 
         try {
@@ -70,6 +76,10 @@ public class PostServiceImpl implements PostService {
                         log.error("Post not found with ID: {}", id);
                         return new AppException(ErrorCode.POST_NOT_FOUND);
                     });
+
+            if (existedPost.getAuthor().getUserId() != userId) {
+                throw new AppException(ErrorCode.INVALID_AUTHOR);
+            }
 
             updatePost(request, existedPost);
             Post updatedPost = postRepository.save(existedPost);
@@ -86,11 +96,17 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public void delete(String id) {
+        Long userId = Long.parseLong(userUtil.getCurrentUserId());
+
         log.info("Soft deleting post ID: {}", id);
 
         try {
             Post existedPost = postRepository.findById(id)
                     .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND));
+
+            if (existedPost.getAuthor().getUserId() != userId) {
+                throw new AppException(ErrorCode.INVALID_AUTHOR);
+            }
 
             existedPost.setDeleted(true);
             postRepository.save(existedPost);
@@ -104,11 +120,17 @@ public class PostServiceImpl implements PostService {
     @Override
     @Transactional
     public void hardDelete(String id) {
+        Long userId = Long.parseLong(userUtil.getCurrentUserId());
+
         log.warn("Hard deleting post ID: {}", id);
 
         try {
             Post existedPost = postRepository.findById(id)
                     .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND));
+            
+            if (existedPost.getAuthor().getUserId() != userId) {
+                throw new AppException(ErrorCode.INVALID_AUTHOR);
+            }
 
             postRepository.delete(existedPost);
 

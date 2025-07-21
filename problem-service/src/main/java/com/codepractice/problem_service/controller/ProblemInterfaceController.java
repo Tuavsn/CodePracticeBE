@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,7 @@ public class ProblemInterfaceController {
     private final ProblemService problemService;
 
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<ProblemResponse>> createProblem(@RequestBody ProblemRequest problem) {
         ProblemResponse savedProblem = problemService.save(problem);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -34,6 +36,7 @@ public class ProblemInterfaceController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<ProblemResponse>> updateProblem(
             @PathVariable String id,
             @RequestBody ProblemRequest problem
@@ -43,6 +46,7 @@ public class ProblemInterfaceController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<String>> deleteProblem(@PathVariable String id) {
         problemService.hardDelete(id);
         return ResponseEntity.ok(ApiResponse.success(

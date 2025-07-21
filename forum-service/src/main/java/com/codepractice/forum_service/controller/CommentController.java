@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +28,7 @@ public class CommentController {
     private final CommentService commentService;
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<ApiResponse<CommentResponse>> createComment(
             @RequestBody CommentRequest request) {
         CommentResponse created = commentService.save(request);
@@ -35,6 +37,7 @@ public class CommentController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<ApiResponse<CommentResponse>> updateComment(
             @PathVariable String id,
             @RequestBody CommentRequest request) {
@@ -44,6 +47,7 @@ public class CommentController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<ApiResponse<String>> deleteComment(@PathVariable String id) {
         commentService.delete(id);
         return ResponseEntity.ok(ApiResponse.success(
@@ -67,6 +71,7 @@ public class CommentController {
     }
 
     @GetMapping("/personal")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<ApiResponse<List<CommentResponse>>> getPersonalComments() {
         List<CommentResponse> comments = commentService.getAllPersonalComments();
         return ResponseEntity.ok(

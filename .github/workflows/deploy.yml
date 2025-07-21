@@ -39,6 +39,10 @@ jobs:
         # OAuth for Auth Service
         GOOGLE_CLIENT_ID:           ${{ secrets.GOOGLE_CLIENT_ID }}
         GOOGLE_CLIENT_SECRET:       ${{ secrets.GOOGLE_CLIENT_SECRET }}
+
+        # Mail credential for mail service
+        MAIL_USERNAME:              ${{ secrets.MAIL_USERNAME }}
+        MAIL_PASSWORD:              ${{ secrets.MAIL_PASSWORD }}
     steps:
       - name: Checkout Source
         uses: actions/checkout@v3
