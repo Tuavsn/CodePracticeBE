@@ -8,6 +8,7 @@ import java.time.Duration;
 import java.util.Set;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -39,22 +40,31 @@ import lombok.RequiredArgsConstructor;
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class AuthorizationServerConfig {
-    private final static String GATEWAYCLIENTID = "gateway-client";
-    private final static String GATEWAYCLIENT_HOSTURL = "http://localhost:8080";
-    private final static String AUTHSERVER_URL = "http://localhost:9000";
+    @Value("${auth.server.clientId}")
+    private String CLIENTID = "gateway-client";
+
+    @Value("${auth.server.secret}")
+    private String CLIENT_SECRET = "secret";
+
+    @Value("${auth.server.gatewayClientUrl}")
+    private String GATEWAYCLIENT_HOSTURL = "http://localhost:8080";
+
+    @Value("${auth.server.authServerUrl}")
+    private String AUTHSERVER_URL = "http://localhost:9000";
+
     private final PasswordEncoder passwordEncoder;
 
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
         RegisteredClient webClient = RegisteredClient
             .withId(UUID.randomUUID().toString())
-            .clientId(GATEWAYCLIENTID)
-            .clientSecret(passwordEncoder.encode("secret"))
+            .clientId(CLIENTID)
+            .clientSecret(passwordEncoder.encode(CLIENT_SECRET))
             .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
             .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
             .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
             .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-            .redirectUri(GATEWAYCLIENT_HOSTURL + "/login/oauth2/code/" + GATEWAYCLIENTID)
+            .redirectUri(GATEWAYCLIENT_HOSTURL + "/login/oauth2/code/" + CLIENTID)
             .postLogoutRedirectUri(GATEWAYCLIENT_HOSTURL + "/logout")
             .scope(OidcScopes.OPENID)
             .scope(OidcScopes.PROFILE)

@@ -16,6 +16,10 @@ jobs:
         AUTH_SERVICE_DB:            ${{ secrets.AUTH_SERVICE_DB }}
         AUTH_SERVICE_DB_USERNAME:   ${{ secrets.AUTH_SERVICE_DB_USERNAME }}
         AUTH_SERVICE_DB_PASSWORD:   ${{ secrets.AUTH_SERVICE_DB_PASSWORD }}
+        CLIENTID:                   ${{ secrets.CLIENTID }}
+        CLIENT_SECRET:              ${{ secrets.CLIENT_SECRET }}
+        GATEWAY_CLIENT_URL:         ${{ secrets.GATEWAY_CLIENT_URL }}
+        AUTH_SERVER_URL:            ${{ secrets.AUTH_SERVER_URL }}
 
         # User service DB
         USER_SERVICE_DB:            ${{ secrets.USER_SERVICE_DB }}
