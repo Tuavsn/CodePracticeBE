@@ -1,6 +1,8 @@
 spring:
   cloud:
     gateway:
+      forwarded:
+        enabled: true
       server:
         webflux:
           discovery:
@@ -67,7 +69,6 @@ eureka:
 
 server:
   port: 8080
-  forward-headers-strategy: framework
 
 management:
   endpoints:

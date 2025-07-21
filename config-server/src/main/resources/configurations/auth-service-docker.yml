@@ -51,7 +51,7 @@ auth:
 
 server:
   port: 9000
-  use-forward-headers: true
+  forward-headers-strategy: framework
 
 eureka:
   instance:
