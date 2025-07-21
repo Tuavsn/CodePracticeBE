@@ -22,41 +22,41 @@ spring:
             - id: AUTH-SERVICE
               uri: lb://AUTH-SERVICE
               predicates:
-                - Path=/api/v1/auth-service/**
+                - Path=/(login|register|forgot-password|confirm-registration|reset-password)
               filters:
-                - StripPrefix=3  # Removes /api/v1/auth-service
+                - StripPrefix=0
             
             # USER ROUTE  
             - id: USER-SERVICE
               uri: lb://USER-SERVICE
               predicates:
-                - Path=/api/v1/user-service/**
+                - Path=/api/v1/user/**
               filters:
-                - StripPrefix=3  # Removes /api/v1/user-service
+                - StripPrefix=2  # Removes /api/v1/user-service
             
             # FORUM ROUTE
             - id: FORUM-SERVICE
               uri: lb://FORUM-SERVICE
               predicates:
-                - Path=/api/v1/forum-service/**
+                - Path=/api/v1/forum/**
               filters:
-                - StripPrefix=3  # Removes /api/v1/forum-service
+                - StripPrefix=2  # Removes /api/v1/forum-service
             
             # PROBLEM ROUTE
             - id: PROBLEM-SERVICE
               uri: lb://PROBLEM-SERVICE
               predicates:
-                - Path=/api/v1/problem-service/**
+                - Path=/api/v1/problem/**
               filters:
-                - StripPrefix=3  # Removes /api/v1/problem-service
+                - StripPrefix=2  # Removes /api/v1/problem-service
 
             # SUBMISSION ROUTE
             - id: SUBMISSION-SERVICE
               uri: lb://SUBMISSION-SERVICE
               predicates:
-                - Path=/api/v1/submission-service/**
+                - Path=/api/v1/submission/**
               filters:
-                - StripPrefix=3  # Removes /api/v1/problem-service
+                - StripPrefix=2  # Removes /api/v1/problem-service
 
 eureka:
   instance:
