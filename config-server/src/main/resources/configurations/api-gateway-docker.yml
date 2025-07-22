@@ -3,6 +3,13 @@ spring:
     gateway:
       forwarded:
         enabled: true
+      x-forwarded:
+        enabled: true
+        for-enabled: true
+        host-enabled: true
+        port-enabled: true
+        proto-enabled: true
+        prefix-enabled: true
       server:
         webflux:
           discovery:
@@ -69,6 +76,7 @@ eureka:
 
 server:
   port: 8080
+  forward-headers-strategy: framework
 
 management:
   endpoints:
