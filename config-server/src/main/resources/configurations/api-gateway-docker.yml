@@ -1,15 +1,6 @@
 spring:
   cloud:
     gateway:
-      forwarded:
-        enabled: true
-      x-forwarded:
-        enabled: true
-        for-enabled: true
-        host-enabled: true
-        port-enabled: true
-        proto-enabled: true
-        prefix-enabled: true
       server:
         webflux:
           discovery:
@@ -31,7 +22,7 @@ spring:
             - id: AUTH-SERVICE
               uri: lb://AUTH-SERVICE
               predicates:
-                - Path=/login/**,/register/**,/forgot-password/**,/confirm-registration/**,/reset-password/**
+                - Path=/login/**,/logout/**,/register/**,/forgot-password/**,/confirm-registration/**,/reset-password/**,/oauth2/**
               filters:
                 - StripPrefix=0
             
@@ -76,7 +67,6 @@ eureka:
 
 server:
   port: 8080
-  forward-headers-strategy: framework
 
 management:
   endpoints:

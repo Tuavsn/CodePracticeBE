@@ -1,5 +1,6 @@
 package com.codepractice.auth_service.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -16,11 +17,11 @@ import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 import com.codepractice.auth_service.service.impl.CustomOAuth2UserService;
 import com.codepractice.auth_service.service.impl.CustomUserDetailService;
 
-import lombok.AllArgsConstructor;
-
 @Configuration
-@AllArgsConstructor
 public class SecurityConfig {
+	@Value("${auth.server.gatewayClientUrl}")
+    private String gatewayClientUrl;
+	
 	private final CustomUserDetailService customUserDetailService;
 	private final CustomOAuth2UserService customOAuth2UserService;
 	private final static String[] whiteList = {
@@ -35,6 +36,13 @@ public class SecurityConfig {
 		"/js/**",
 		"/error/**",
 	};
+
+	public SecurityConfig(CustomUserDetailService customUserDetailService, 
+                         CustomOAuth2UserService customOAuth2UserService) {
+        this.customUserDetailService = customUserDetailService;
+        this.customOAuth2UserService = customOAuth2UserService;
+    }
+
 
 	@Bean
 	@Order(1)
@@ -64,10 +72,10 @@ public class SecurityConfig {
 					.requestMatchers(whiteList).permitAll()
 					.anyRequest().authenticated())
 			.oauth2Login(oauth2 -> oauth2
-					.loginPage("/login").defaultSuccessUrl("/", true)
+					.loginPage("/login").defaultSuccessUrl(gatewayClientUrl, true).failureUrl(gatewayClientUrl + "/login?error=true")
 					.userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService)))
 			.formLogin(form -> form
-					.loginPage("/login").defaultSuccessUrl("/", true))
+					.loginPage("/login").defaultSuccessUrl(gatewayClientUrl, true).failureUrl(gatewayClientUrl + "/login?error=true"))
 			.userDetailsService(customUserDetailService);
 
 		return http.build();
@@ -77,4 +85,5 @@ public class SecurityConfig {
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
+	
 }

@@ -1,5 +1,6 @@
 package com.codepractice.auth_service.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,6 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @RequiredArgsConstructor
 public class AuthController {
+    @Value("${auth.server.gatewayClientUrl}")
+    private String gatewayClientUrl;
+
     private final AuthService authService;
 
     @GetMapping("/login")
@@ -83,7 +87,7 @@ public class AuthController {
             redirectAttributes.addFlashAttribute("message", 
                 "Registration successful! Please check your email and verify OTP.");
             redirectAttributes.addFlashAttribute("email", registerRequest.getEmail());
-            return "redirect:/confirm-registration";
+            return "redirect:" + gatewayClientUrl + "/confirm-registration";
             
         } catch (Exception e) {
             log.error("Registration failed for email: {}, error: {}", 
@@ -119,7 +123,7 @@ public class AuthController {
             
             redirectAttributes.addFlashAttribute("message", 
                 "Registration confirmed successfully! Please login.");
-            return "redirect:/login";
+            return "redirect:" + gatewayClientUrl + "/login";
             
         } catch (Exception e) {
             log.error("Registration confirmation failed for email: {}, error: {}", 
@@ -127,7 +131,7 @@ public class AuthController {
             
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             redirectAttributes.addFlashAttribute("email", email);
-            return "redirect:/confirm-registration";
+            return "redirect:" + gatewayClientUrl + "/confirm-registration";
         }
     }
 
@@ -144,10 +148,10 @@ public class AuthController {
             authService.sendPasswordResetEmail(email);
             redirectAttributes.addFlashAttribute("message", "Password reset email sent! Please check your email.");
             redirectAttributes.addFlashAttribute("email", email);
-            return "redirect:/reset-password";
+            return "redirect:" + gatewayClientUrl + "/reset-password";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
-            return "redirect:/forgot-password";
+            return "redirect:" + gatewayClientUrl + "/forgot-password";
         }
     }
 
@@ -172,17 +176,17 @@ public class AuthController {
         if (!newPassword.equals(confirmPassword)) {
             redirectAttributes.addFlashAttribute("error", "Passwords do not match!");
             redirectAttributes.addFlashAttribute("email", email);
-            return "redirect:/reset-password";
+            return "redirect:" + gatewayClientUrl + "/reset-password";
         }
 
         try {
             authService.resetPassword(email, otp, newPassword);
             redirectAttributes.addFlashAttribute("message", "Password reset successful! Please login with your new password.");
-            return "redirect:/login";
+            return "redirect:" + gatewayClientUrl + "/login";
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", e.getMessage());
             redirectAttributes.addFlashAttribute("email", email);
-            return "redirect:/reset-password";
+            return "redirect:" + gatewayClientUrl + "/reset-password";
         }
     }
 }

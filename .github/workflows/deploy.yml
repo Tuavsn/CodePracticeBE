@@ -11,6 +11,7 @@ jobs:
     env:
         # Common
         API_PREFIX:                 ${{ vars.API_PREFIX }}
+        CLIENT_URL:                 ${{ vars.CLIENT_URL }}
 
         # Auth service DB
         AUTH_SERVICE_DB:            ${{ secrets.AUTH_SERVICE_DB }}

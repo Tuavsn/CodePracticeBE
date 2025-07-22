@@ -1,8 +1,6 @@
 spring:
   cloud:
     gateway:
-      forwarded:
-        enabled: true
       server:
         webflux:
           discovery:
@@ -24,7 +22,7 @@ spring:
             - id: AUTH-SERVICE
               uri: lb://AUTH-SERVICE
               predicates:
-                - Path=/login/**,/register/**,/forgot-password/**,/confirm-registration/**,/reset-password/**
+                - Path=/login/**,/logout/**,/register/**,/forgot-password/**,/confirm-registration/**,/reset-password/**,/oauth2/**
               filters:
                 - PreserveHostHeader
                 - StripPrefix=0
@@ -63,7 +61,6 @@ spring:
 
 server:
   port: 8080
-  forward-headers-strategy: framework
 
 management:
   endpoints:

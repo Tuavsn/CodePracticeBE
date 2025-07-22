@@ -1,9 +1,7 @@
 package com.codepractice.auth_service.service.impl;
 
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import com.codepractice.auth_service.enums.AccountRole;
 import com.codepractice.auth_service.enums.AccountStatus;

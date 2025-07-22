@@ -48,10 +48,10 @@ auth:
     secret: ${CLIENT_SECRET:secret}
     gatewayClientUrl: ${GATEWAY_CLIENT_URL:https://codejudge.trinhhoctuan.io.vn}
     authServerUrl: ${AUTH_SERVER_URL:http://localhost:9000}
+    clientUrl: ${CLIENT_URL:http://localhost:3000}
 
 server:
   port: 9000
-  forward-headers-strategy: framework
 
 eureka:
   instance:

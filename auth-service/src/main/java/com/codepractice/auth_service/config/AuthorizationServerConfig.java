@@ -41,16 +41,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthorizationServerConfig {
     @Value("${auth.server.clientId}")
-    private String CLIENTID;
+    private String clientId;
 
     @Value("${auth.server.secret}")
-    private String CLIENT_SECRET;
+    private String clientSecret;
 
-    @Value("${auth.server.gatewayClientUrl}")
-    private String GATEWAYCLIENT_HOSTURL;
+    @Value("${auth.server.clientUrl}")
+    private String clientUrl;
 
     @Value("${auth.server.authServerUrl}")
-    private String AUTHSERVER_URL;
+    private String authServerUrl;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -58,14 +58,14 @@ public class AuthorizationServerConfig {
     public RegisteredClientRepository registeredClientRepository() {
         RegisteredClient webClient = RegisteredClient
             .withId(UUID.randomUUID().toString())
-            .clientId(CLIENTID)
-            .clientSecret(passwordEncoder.encode(CLIENT_SECRET))
+            .clientId(clientId)
+            .clientSecret(passwordEncoder.encode(clientSecret))
             .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
             .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
             .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
             .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
-            .redirectUri(GATEWAYCLIENT_HOSTURL + "/login/oauth2/code/" + CLIENTID)
-            .postLogoutRedirectUri(GATEWAYCLIENT_HOSTURL + "/logout")
+            .redirectUri(clientUrl + "/oauth/callback")
+            .postLogoutRedirectUri(clientUrl + "/logout")
             .scope(OidcScopes.OPENID)
             .scope(OidcScopes.PROFILE)
             .scope(OidcScopes.EMAIL)
@@ -129,6 +129,6 @@ public class AuthorizationServerConfig {
 
     @Bean
     public AuthorizationServerSettings authorizationServerSettings() {
-        return AuthorizationServerSettings.builder().issuer(AUTHSERVER_URL).build();
+        return AuthorizationServerSettings.builder().issuer(authServerUrl).build();
     }
 }
