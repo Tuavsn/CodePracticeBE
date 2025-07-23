@@ -46,7 +46,7 @@ auth:
   server:
     clientId: ${CLIENTID:gateway-client}
     secret: ${CLIENT_SECRET:secret}
-    gatewayClientUrl: ${GATEWAY_CLIENT_URL:https://codejudge.trinhhoctuan.io.vn}
+    gatewayClientUrl: ${GATEWAY_CLIENT_URL:http://localhost:8080}
     authServerUrl: ${AUTH_SERVER_URL:http://localhost:9000}
     clientUrl: ${CLIENT_URL:http://localhost:3000}
 

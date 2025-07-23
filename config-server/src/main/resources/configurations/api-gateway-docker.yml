@@ -3,6 +3,8 @@ spring:
     gateway:
       server:
         webflux:
+          forwarded:
+            enabled: true
           discovery:
             locator:
               enabled: true
@@ -24,6 +26,10 @@ spring:
               predicates:
                 - Path=/login/**,/logout/**,/register/**,/forgot-password/**,/confirm-registration/**,/reset-password/**,/oauth2/**
               filters:
+                - PreserveHostHeader
+                - AddRequestHeader=X-Forwarded-Proto, https
+                - AddRequestHeader=X-Forwarded-Host, ${GATEWAY_CLIENT_URL}
+                - AddRequestHeader=X-Forwarded-Port, 443
                 - StripPrefix=0
             
             # USER ROUTE  

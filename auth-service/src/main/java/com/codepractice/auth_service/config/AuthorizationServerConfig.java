@@ -35,10 +35,12 @@ import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
+@Slf4j
 public class AuthorizationServerConfig {
     @Value("${auth.server.clientId}")
     private String clientId;
@@ -56,6 +58,7 @@ public class AuthorizationServerConfig {
 
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
+        log.info("Registered redirect URI: " + (clientUrl + "/oauth/callback"));
         RegisteredClient webClient = RegisteredClient
             .withId(UUID.randomUUID().toString())
             .clientId(clientId)

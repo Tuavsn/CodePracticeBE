@@ -57,7 +57,7 @@ public class SecurityConfig {
 			.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
 			.exceptionHandling((exceptions) -> exceptions
 				.defaultAuthenticationEntryPointFor(
-						new LoginUrlAuthenticationEntryPoint("/login"),
+						new LoginUrlAuthenticationEntryPoint(gatewayClientUrl + "/login"),
 						new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
 				)
 			);
@@ -72,10 +72,10 @@ public class SecurityConfig {
 					.requestMatchers(whiteList).permitAll()
 					.anyRequest().authenticated())
 			.oauth2Login(oauth2 -> oauth2
-					.loginPage("/login").defaultSuccessUrl(gatewayClientUrl, true).failureUrl(gatewayClientUrl + "/login?error=true")
+					.loginPage("/login").failureUrl(gatewayClientUrl + "/login?error=true")
 					.userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService)))
 			.formLogin(form -> form
-					.loginPage("/login").defaultSuccessUrl(gatewayClientUrl, true).failureUrl(gatewayClientUrl + "/login?error=true"))
+					.loginPage("/login").failureUrl(gatewayClientUrl + "/login?error=true"))
 			.userDetailsService(customUserDetailService);
 
 		return http.build();
