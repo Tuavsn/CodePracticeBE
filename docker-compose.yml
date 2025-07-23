@@ -202,6 +202,7 @@ services:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
       - API_PREFIX=${API_PREFIX}
+      - GATEWAY_CLIENT_URL=${GATEWAY_CLIENT_URL}
     networks:
       - code-judge-net
 
