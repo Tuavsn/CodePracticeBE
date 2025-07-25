@@ -34,7 +34,7 @@ public class ProblemServiceImpl implements ProblemService {
                     .thumbnail(request.getThumbnail())
                     .constraints(request.getConstraints())
                     .difficulty(request.getDifficulty())
-                    .example(request.getExample())
+                    .examples(request.getExamples())
                     .tags(request.getTags())
                     .hints(request.getHints())
                     .codeTemplates(request.getCodeTemplates())
@@ -142,7 +142,7 @@ public class ProblemServiceImpl implements ProblemService {
                     .thumbnail(source.getThumbnail())
                     .constraints(source.getConstraints())
                     .difficulty(source.getDifficulty())
-                    .example(source.getExample())
+                    .examples(source.getExamples())
                     .tags(source.getTags())
                     .hints(source.getHints())
                     .codeTemplates(source.getCodeTemplates())
@@ -178,8 +178,8 @@ public class ProblemServiceImpl implements ProblemService {
         if (source.getCodeTemplates() != null && !source.getCodeTemplates().isEmpty()) {
             target.setCodeTemplates(source.getCodeTemplates());
         }
-        if (source.getExample() != null && !source.getExample().isEmpty()) {
-            target.setExample(source.getExample());
+        if (source.getExamples() != null && !source.getExamples().isEmpty()) {
+            target.setExamples(source.getExamples());
         }
         if (source.getTags() != null && !source.getTags().isEmpty()) {
             target.setTags(source.getTags());

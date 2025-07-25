@@ -22,7 +22,7 @@ public class ProblemRequest {
     private String thumbnail;
     private ProblemDifficulty difficulty;
     private List<String> constraints;
-    private List<CodeExample> example;
+    private List<CodeExample> examples;
     private List<String> tags;
     private List<String> hints;
     private List<CodeTemplate> codeTemplates;
