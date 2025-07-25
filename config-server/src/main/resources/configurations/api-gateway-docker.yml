@@ -20,6 +20,15 @@ spring:
                   - PATCH
                   - DELETE
           routes:
+            # BLOCK ALL INTERNAL ROUTES
+            - id: BLOCK_INTERNAL
+              uri: no://op
+              order: -1
+              predicates:
+                - Path=/**/internal/**
+              filters:
+                - SetStatus=403
+                
             # AUTH ROUTE
             - id: AUTH-SERVICE
               uri: lb://AUTH-SERVICE
