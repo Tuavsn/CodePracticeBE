@@ -25,10 +25,10 @@ spring:
               uri: no://op
               order: -1
               predicates:
-                - Path=/**/internal/**
+                - Path=/api/v1/users/internal/**,/api/v1/posts/internal/**,/api/v1/problems/internal/**,/api/v1/submissions/internal/**
               filters:
                 - SetStatus=403
-                
+
             # AUTH ROUTE
             - id: AUTH-SERVICE
               uri: lb://AUTH-SERVICE
