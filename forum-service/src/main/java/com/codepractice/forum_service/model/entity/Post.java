@@ -22,7 +22,9 @@ public class Post extends BaseEntity {
     private String title;
     private String thumbnail;
     private String content;
-    private Set<PostImage> images;
     private List<String> topics;
+    private Set<PostImage> images;
     private Set<Reaction> reactions;
+    private long reactionCount;
+    private long commentCount;
 }

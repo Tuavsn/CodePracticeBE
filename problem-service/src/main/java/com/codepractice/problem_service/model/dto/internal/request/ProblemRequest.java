@@ -3,6 +3,7 @@ package com.codepractice.problem_service.model.dto.internal.request;
 import java.util.List;
 
 import com.codepractice.problem_service.enums.ProblemDifficulty;
+import com.codepractice.problem_service.model.entity.CodeExample;
 import com.codepractice.problem_service.model.entity.CodeTemplate;
 import com.codepractice.problem_service.model.entity.TestCase;
 
@@ -19,9 +20,9 @@ public class ProblemRequest {
     private String title;
     private String description;
     private String thumbnail;
-    private String constraints;
     private ProblemDifficulty difficulty;
-    private List<String> example;
+    private List<String> constraints;
+    private List<CodeExample> example;
     private List<String> tags;
     private List<String> hints;
     private List<CodeTemplate> codeTemplates;

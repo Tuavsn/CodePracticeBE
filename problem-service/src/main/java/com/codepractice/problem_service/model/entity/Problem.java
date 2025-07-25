@@ -22,13 +22,15 @@ public class Problem extends BaseEntity {
     private String title;
     private String description;
     private String thumbnail;
-    private String constraints;
     private ProblemDifficulty difficulty;
-    private List<String> example;
+    private List<String> constraints;
+    private List<CodeExample> example;
     private List<String> tags;
     private List<String> hints;
     private List<CodeTemplate> codeTemplates;
     private List<TestCase> sampleTests;
+    private long reactionCount;
+    private long commentCount;
     private long totalSubmissions;
     private long totalAcceptedSubmissions;
     private double timeLimitSeconds;

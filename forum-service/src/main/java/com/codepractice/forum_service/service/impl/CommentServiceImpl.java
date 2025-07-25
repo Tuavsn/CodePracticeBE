@@ -1,6 +1,7 @@
 package com.codepractice.forum_service.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -57,6 +58,8 @@ public class CommentServiceImpl implements CommentService {
                     .isDeleted(false)
                     .build()
             );
+
+            updatePostCommentCount(request.getPostId(), CommentCountOp.INCREASE);
             
             log.info("Comment created successfully with ID: {}", saveComment.getId());
             return createDTO(saveComment);
@@ -114,6 +117,8 @@ public class CommentServiceImpl implements CommentService {
 
             existedComment.setDeleted(true);
             commentRepository.save(existedComment);
+
+            updatePostCommentCount(existedComment.getPostId(), CommentCountOp.DESCREASE);
 
         } catch (Exception e) {
             log.error("Error soft deleting comment ID: {}", id, e);
@@ -188,4 +193,17 @@ public class CommentServiceImpl implements CommentService {
             target.setContent(source.getContent());
         }
     }
+
+    @Transactional
+    private void updatePostCommentCount(String postId, CommentCountOp op) {
+        Post existedPost = postRepository.findById(postId).orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND));
+        long current = Optional.ofNullable(existedPost.getCommentCount()).orElse(0l);
+        switch (op) {
+            case INCREASE -> existedPost.setCommentCount(current + 1);
+            case DESCREASE -> existedPost.setCommentCount(Math.max(0, current - 1));
+        }
+        postRepository.save(existedPost);
+    }
+
+    public enum CommentCountOp { INCREASE, DESCREASE}
 }

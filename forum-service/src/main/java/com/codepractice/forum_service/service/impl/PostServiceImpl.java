@@ -51,6 +51,8 @@ public class PostServiceImpl implements PostService {
                             .topics(request.getTopics())
                             .content(request.getContent())
                             .images(request.getImages())
+                            .reactionCount(0)
+                            .commentCount(0)
                             .isDeleted(false)
                             .build());
 

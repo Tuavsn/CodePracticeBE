@@ -39,6 +39,8 @@ public class ProblemServiceImpl implements ProblemService {
                     .hints(request.getHints())
                     .codeTemplates(request.getCodeTemplates())
                     .sampleTests(request.getSampleTests())
+                    .reactionCount(0)
+                    .commentCount(0)
                     .totalSubmissions(0)
                     .totalAcceptedSubmissions(0)
                     .totalScore(request.getTotalScore())
@@ -145,6 +147,8 @@ public class ProblemServiceImpl implements ProblemService {
                     .hints(source.getHints())
                     .codeTemplates(source.getCodeTemplates())
                     .sampleTests(source.getSampleTests())
+                    .reactionCount(source.getReactionCount())
+                    .commentCount(source.getCommentCount())
                     .totalSubmissions(source.getTotalSubmissions())
                     .totalAcceptedSubmissions(source.getTotalAcceptedSubmissions())
                     .timeLimitSeconds(source.getTimeLimitSeconds())
@@ -165,7 +169,7 @@ public class ProblemServiceImpl implements ProblemService {
         if (source.getThumbnail() != null) {
             target.setThumbnail(source.getThumbnail());
         }
-        if (source.getConstraints() != null) {
+        if (source.getConstraints() != null && !source.getConstraints().isEmpty()) {
             target.setConstraints(source.getConstraints());
         }
         if (source.getDifficulty() != null) {
