@@ -33,7 +33,7 @@ spring:
             - id: AUTH-SERVICE
               uri: lb://AUTH-SERVICE
               predicates:
-                - Path=/login/**,/logout/**,/register/**,/forgot-password/**,/confirm-registration/**,/reset-password/**,/oauth2/**
+                - Path=/login/**,/logout/**,/register/**,/forgot-password/**,/confirm-registration/**,/reset-password/**,/oauth2/**, /userinfo
               filters:
                 - PreserveHostHeader
                 - AddRequestHeader=X-Forwarded-Proto, http
