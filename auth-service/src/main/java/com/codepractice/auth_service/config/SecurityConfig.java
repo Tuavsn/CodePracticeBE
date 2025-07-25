@@ -51,7 +51,6 @@ public class SecurityConfig {
         this.customOAuth2UserService = customOAuth2UserService;
     }
 
-
 	@Bean
 	@Order(1)
 	public SecurityFilterChain authorizationSecurityFilterChain(HttpSecurity http) throws Exception {
@@ -62,7 +61,7 @@ public class SecurityConfig {
 			.with(authorizationServerConfigurer,
 				(authorizationSever) -> authorizationSever.oidc(Customizer.withDefaults())
 			)
-			.cors(Customizer.withDefaults())
+			.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 			.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
 			.exceptionHandling((exceptions) -> exceptions
 				.defaultAuthenticationEntryPointFor(
@@ -77,7 +76,7 @@ public class SecurityConfig {
 	@Order(2)
 	public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 		http
-			.cors(Customizer.withDefaults())
+			.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 			.authorizeHttpRequests(authorize -> authorize
 					.requestMatchers(whiteList).permitAll()
 					.anyRequest().authenticated())
