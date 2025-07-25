@@ -1,5 +1,7 @@
 package com.codepractice.auth_service.config;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,6 +15,9 @@ import org.springframework.security.oauth2.server.authorization.config.annotatio
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.codepractice.auth_service.service.impl.CustomOAuth2UserService;
 import com.codepractice.auth_service.service.impl.CustomUserDetailService;
@@ -21,6 +26,9 @@ import com.codepractice.auth_service.service.impl.CustomUserDetailService;
 public class SecurityConfig {
 	@Value("${auth.server.gatewayClientUrl}")
     private String gatewayClientUrl;
+	
+	@Value("${auth.server.clientUrl}")
+    private String clientUrl;
 	
 	private final CustomUserDetailService customUserDetailService;
 	private final CustomOAuth2UserService customOAuth2UserService;
@@ -54,6 +62,7 @@ public class SecurityConfig {
 			.with(authorizationServerConfigurer,
 				(authorizationSever) -> authorizationSever.oidc(Customizer.withDefaults())
 			)
+			.cors(Customizer.withDefaults())
 			.authorizeHttpRequests((authorize) -> authorize.anyRequest().authenticated())
 			.exceptionHandling((exceptions) -> exceptions
 				.defaultAuthenticationEntryPointFor(
@@ -68,6 +77,7 @@ public class SecurityConfig {
 	@Order(2)
 	public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 		http
+			.cors(Customizer.withDefaults())
 			.authorizeHttpRequests(authorize -> authorize
 					.requestMatchers(whiteList).permitAll()
 					.anyRequest().authenticated())
@@ -80,6 +90,21 @@ public class SecurityConfig {
 
 		return http.build();
 	}
+
+	@Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+        config.setAllowedOrigins(List.of(
+            clientUrl
+        ));
+        config.addAllowedMethod("*");
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        config.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+        return source;
+    }
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
