@@ -37,7 +37,7 @@ public class SubmissionController {
                 .body(ApiResponse.success(result, "Executed successfully", HttpStatus.OK.value()));
     }
 
-    @GetMapping("/getAll")
+    @GetMapping()
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<ApiResponse<List<SubmissionResponse>>> getSubmissions(@RequestParam String problemId) {
         List<SubmissionResponse> submissions = submissionService.getSubmissions(problemId);

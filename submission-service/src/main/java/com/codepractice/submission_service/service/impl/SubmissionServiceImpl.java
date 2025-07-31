@@ -178,7 +178,7 @@ public class SubmissionServiceImpl implements SubmissionService {
     private ResultResponse createResultDTO(Result source) {
         return ResultResponse.builder()
                 .submissionId(source.getSubmissionId())
-                .result(SubmitResult.getDisplayNameByCode(source.getResult().getCode()))
+                .result(source.getResult())
                 .error(source.getError())
                 .stdout(source.getStdout())
                 .time(source.getTime())

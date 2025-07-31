@@ -1,5 +1,7 @@
 package com.codepractice.submission_service.model.dto.internal.response;
 
+import com.codepractice.submission_service.enums.SubmitResult;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class ResultResponse {
     private String submissionId;
-    private String result;
+    private SubmitResult result;
     private String error;
     private String stdout;
     private double time;
