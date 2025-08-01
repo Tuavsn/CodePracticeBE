@@ -156,7 +156,7 @@ public class PostServiceImpl implements PostService {
     public List<PostResponse> getByUserId(String id) {
         log.debug("Retrieving posts by user ID: {}", id);
 
-        List<Post> posts = postRepository.findAllByAuthor_UserId(id);
+        List<Post> posts = postRepository.findAllByAuthor_Id(id);
         log.info("Found {} posts for user ID: {}", posts.size(), id);
 
         return posts.stream().map(post -> createDTO(post)).toList();
