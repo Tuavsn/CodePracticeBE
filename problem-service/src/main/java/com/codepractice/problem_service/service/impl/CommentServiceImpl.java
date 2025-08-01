@@ -164,7 +164,7 @@ public class CommentServiceImpl implements CommentService {
     public List<CommentResponse> getAllByUserId(String id) {
         log.debug("Retrieving comments by user ID: {}", id);
 
-        List<Comment> comments = commentRepository.findAllByAuthor_UserIdAndIsDeleted(id, false);
+        List<Comment> comments = commentRepository.findAllByAuthor_IdAndIsDeleted(id, false);
         log.info("Found {} comments for user ID: {}", comments.size(), id);
         
         return comments.stream().map(comment -> createDTO(comment)).toList();
