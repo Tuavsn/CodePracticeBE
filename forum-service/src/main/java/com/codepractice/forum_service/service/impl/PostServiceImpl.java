@@ -42,7 +42,7 @@ public class PostServiceImpl implements PostService {
                     Post.builder()
                             .author(
                                     Author.builder()
-                                            .userId(user.getId())
+                                            .id(user.getId())
                                             .username(user.getUsername())
                                             .avatar(user.getAvatar())
                                             .build())
@@ -79,7 +79,7 @@ public class PostServiceImpl implements PostService {
                         return new AppException(ErrorCode.POST_NOT_FOUND);
                     });
 
-            if (existedPost.getAuthor().getUserId() != userId) {
+            if (existedPost.getAuthor().getId() != userId) {
                 throw new AppException(ErrorCode.INVALID_AUTHOR);
             }
 
@@ -106,7 +106,7 @@ public class PostServiceImpl implements PostService {
             Post existedPost = postRepository.findById(id)
                     .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND));
 
-            if (existedPost.getAuthor().getUserId() != userId) {
+            if (existedPost.getAuthor().getId() != userId) {
                 throw new AppException(ErrorCode.INVALID_AUTHOR);
             }
 
@@ -130,7 +130,7 @@ public class PostServiceImpl implements PostService {
             Post existedPost = postRepository.findById(id)
                     .orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND));
             
-            if (existedPost.getAuthor().getUserId() != userId) {
+            if (existedPost.getAuthor().getId() != userId) {
                 throw new AppException(ErrorCode.INVALID_AUTHOR);
             }
 

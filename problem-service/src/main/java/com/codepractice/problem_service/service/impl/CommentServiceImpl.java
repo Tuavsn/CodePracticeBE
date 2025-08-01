@@ -48,7 +48,7 @@ public class CommentServiceImpl implements CommentService {
                 Comment.builder()
                     .author(
                         Author.builder()
-                            .userId(user.getId())
+                            .id(user.getId())
                             .username(user.getUsername())
                             .avatar(user.getAvatar())
                             .build()
@@ -84,7 +84,7 @@ public class CommentServiceImpl implements CommentService {
                         return new AppException(ErrorCode.COMMENT_NOT_FOUND);
                     });
 
-            if (existedComment.getAuthor().getUserId() != userId) {
+            if (existedComment.getAuthor().getId() != userId) {
                 throw new AppException(ErrorCode.INVALID_AUTHOR);
             }
 
@@ -111,7 +111,7 @@ public class CommentServiceImpl implements CommentService {
             Comment existedComment = commentRepository.findById(id)
                     .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_FOUND));
             
-            if (existedComment.getAuthor().getUserId() != userId) {
+            if (existedComment.getAuthor().getId() != userId) {
                 throw new AppException(ErrorCode.INVALID_AUTHOR);
             }
             
@@ -138,7 +138,7 @@ public class CommentServiceImpl implements CommentService {
             Comment existedComment = commentRepository.findById(id)
                     .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_FOUND));
 
-            if (existedComment.getAuthor().getUserId() != userId) {
+            if (existedComment.getAuthor().getId() != userId) {
                 throw new AppException(ErrorCode.INVALID_AUTHOR);
             }
 
