@@ -39,7 +39,7 @@ public class PostController {
                 .body(ApiResponse.success(savedPost, "Post created successfully", HttpStatus.CREATED.value()));
     }
 
-    @PutMapping
+    @PutMapping("/${id}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<ApiResponse<PostResponse>> updatePost(
         @PathVariable String id,
