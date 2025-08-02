@@ -22,7 +22,7 @@ import com.codepractice.forum_service.service.CommentService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/comments")
+@RequestMapping("/posts/comments")
 @RequiredArgsConstructor
 public class CommentController {
     private final CommentService commentService;
