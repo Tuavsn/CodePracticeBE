@@ -71,6 +71,7 @@ services:
       - CLIENTID=${CLIENTID}
       - CLIENT_SECRET=${CLIENT_SECRET}
       - CLIENT_URL=${CLIENT_URL}
+      - DEV_CLIENT_URL=${DEV_CLIENT_URL}
       - GATEWAY_CLIENT_URL=${GATEWAY_CLIENT_URL}
       - AUTH_SERVER_URL=${AUTH_SERVER_URL}
       # Google credential

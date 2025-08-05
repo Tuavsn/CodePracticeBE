@@ -51,6 +51,9 @@ public class AuthorizationServerConfig {
     @Value("${auth.server.clientUrl}")
     private String clientUrl;
 
+    @Value("${auth.server.devClientUrl}")
+    private String devClientUrl;
+
     @Value("${auth.server.authServerUrl}")
     private String authServerUrl;
 
@@ -68,6 +71,7 @@ public class AuthorizationServerConfig {
             .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
             .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
             .redirectUri(clientUrl + "/oauth/callback")
+            .redirectUri(devClientUrl + "/oauth/callback")
             .postLogoutRedirectUri(clientUrl + "/logout")
             .scope(OidcScopes.OPENID)
             .scope(OidcScopes.PROFILE)

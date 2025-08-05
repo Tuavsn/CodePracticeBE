@@ -6,7 +6,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.codepractice")
 @EnableDiscoveryClient
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)

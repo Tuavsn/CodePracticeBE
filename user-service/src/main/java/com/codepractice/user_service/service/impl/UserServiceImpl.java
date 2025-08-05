@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.codepractice.common_lib.enums.ErrorCode;
 import com.codepractice.common_lib.exceptions.AppException;
+import com.codepractice.common_lib.utils.UserUtil;
 import com.codepractice.user_service.enums.AccountAchievement;
 import com.codepractice.user_service.model.dto.request.UserRequest;
 import com.codepractice.user_service.model.dto.response.UserResponse;
@@ -23,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 	private final UserRepository userRepository;
+	private final UserUtil userUtil;
 
 	@Override
 	@Transactional
@@ -101,6 +103,20 @@ public class UserServiceImpl implements UserService {
 
 		User user = userRepository.findById(id).orElseThrow(() -> {
 			log.error("User not found with ID: {}", id);
+			return new AppException(ErrorCode.USER_NOT_FOUND);
+		});
+
+		return createDTO(user);
+	}
+
+	@Override
+	public UserResponse getProfile() {
+		Long userId = Long.parseLong(userUtil.getCurrentUserId());
+
+		log.debug("Retrieving user profile: {}", userId);
+
+		User user = userRepository.findById(userId).orElseThrow(() -> {
+			log.error("User not found with ID: {}", userId);
 			return new AppException(ErrorCode.USER_NOT_FOUND);
 		});
 

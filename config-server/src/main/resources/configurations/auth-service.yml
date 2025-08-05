@@ -49,6 +49,7 @@ auth:
     gatewayClientUrl: ${GATEWAY_CLIENT_URL:http://localhost:8080}
     authServerUrl: ${AUTH_SERVER_URL:http://localhost:9000}
     clientUrl: ${CLIENT_URL:http://localhost:3000}
+    devClientUrl: ${DEV_CLIENT_URL:http://localhost:3000}
 
 server:
   port: 9000
