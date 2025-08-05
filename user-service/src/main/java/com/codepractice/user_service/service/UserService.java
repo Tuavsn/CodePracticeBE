@@ -15,4 +15,6 @@ public interface UserService {
   public List<UserResponse> getAll();
 
   public UserResponse getById(Long id);
+
+  public UserResponse getProfile();
 }

@@ -38,14 +38,15 @@ public class UserInterfaceController {
         return ResponseEntity.ok(ApiResponse.success(users, "Users retrieved successfully", HttpStatus.OK.value()));
     }
 
+    @GetMapping("/profile")
+    public ResponseEntity<ApiResponse<UserResponse>> getProfile() {
+        UserResponse user = userService.getProfile();
+        return ResponseEntity.ok(ApiResponse.success(user, "Profile retrieved successfully", HttpStatus.OK.value()));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<UserResponse>> getUserById(@PathVariable long id) {
         UserResponse user = userService.getById(id);
-        if (user != null) {
-            return ResponseEntity.ok(ApiResponse.success(user, "User found", HttpStatus.OK.value()));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ApiResponse.error("User not found", HttpStatus.NOT_FOUND.value()));
-        }
+        return ResponseEntity.ok(ApiResponse.success(user, "User found", HttpStatus.OK.value()));
     }
 }
