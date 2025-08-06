@@ -1,8 +1,15 @@
 package com.codepractice.forum_service.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,11 +35,55 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final UserServiceClient userService;
     private final UserUtil userUtil;
+    private final MongoTemplate mongoTemplate;
 
     // ======================== POST CRUD OPERATIONS ========================
 
     /**
+     * Get all posts
+     * 
+     * @return List of Post DTO
+     */
+    @Override
+    public Page<PostResponse> getAll(String title, List<String> topics, Long authorId, Pageable pageable) {
+        log.debug("Retrieving all active posts with filter - title: {}, topic: {}, authorId: {}, page: {}, size: {}",
+                title, topics, authorId, pageable.getPageNumber(), pageable.getPageSize());
+
+        Query query = buildPostFilterQuery(title, topics, authorId, null, pageable);
+
+        List<Post> postsList = mongoTemplate.find(query, Post.class);
+
+        long total = postsList.size();
+
+        Page<Post> posts = new PageImpl<>(postsList, pageable, total);
+
+        log.info("Found {} active posts", total);
+
+        return posts.map(this::createDTO);
+    }
+
+    /**
+     * Get post by id
+     * 
+     * @param id
+     * @return Post DTO
+     */
+    @Override
+    public PostResponse getById(String id) {
+        log.debug("Retrieving post by ID: {}", id);
+
+        Post post = postRepository.findById(id).orElseThrow(() -> {
+            log.error("Post not found with ID: {}", id);
+
+            return new AppException(ErrorCode.POST_NOT_FOUND);
+        });
+
+        return createDTO(post);
+    }
+
+    /**
      * Create new Post
+     * 
      * @param PostRequest
      * @return Post DTO
      */
@@ -66,8 +117,8 @@ public class PostServiceImpl implements PostService {
                             .build());
 
             log.info("Post created successfully with ID: {}", savedPost.getId());
-            return createDTO(savedPost);
 
+            return createDTO(savedPost);
         } catch (Exception e) {
             log.error("Error creating post for user ID: {}", userId, e);
             throw e;
@@ -76,6 +127,7 @@ public class PostServiceImpl implements PostService {
 
     /**
      * Update existed Post
+     * 
      * @param id
      * @param PostRequest
      * @return Post DTO
@@ -99,11 +151,12 @@ public class PostServiceImpl implements PostService {
             }
 
             updatePost(request, existedPost);
+
             Post updatedPost = postRepository.save(existedPost);
 
             log.info("Post updated successfully with ID: {}", id);
-            return createDTO(updatedPost);
 
+            return createDTO(updatedPost);
         } catch (Exception e) {
             log.error("Error updating post ID: {}", id, e);
             throw e;
@@ -112,6 +165,7 @@ public class PostServiceImpl implements PostService {
 
     /**
      * Soft delete existed Post
+     * 
      * @param id
      */
     @Override
@@ -130,8 +184,8 @@ public class PostServiceImpl implements PostService {
             }
 
             existedPost.setDeleted(true);
-            postRepository.save(existedPost);
 
+            postRepository.save(existedPost);
         } catch (Exception e) {
             log.error("Error soft deleting post ID: {}", id, e);
             throw e;
@@ -140,6 +194,7 @@ public class PostServiceImpl implements PostService {
 
     /**
      * Hard delete existed Post
+     * 
      * @param id
      */
     @Override
@@ -158,63 +213,51 @@ public class PostServiceImpl implements PostService {
             }
 
             postRepository.delete(existedPost);
-
         } catch (Exception e) {
             log.error("Error hard deleting post ID: {}", id, e);
             throw e;
         }
     }
 
-    /**
-     * Get all posts
-     * @return List of Post DTO
-     */
-    @Override
-    public List<PostResponse> getAll() {
-        log.debug("Retrieving all active posts");
-
-        List<Post> posts = postRepository.findAllByIsDeleted(false);
-        log.info("Found {} active posts", posts.size());
-
-        return posts.stream().map(post -> createDTO(post)).toList();
-    }
-
-    /**
-     * Get post by user id
-     * @param userId
-     * @return List of Post DTO 
-     */
-    @Override
-    public List<PostResponse> getByUserId(String userId) {
-        log.debug("Retrieving posts by user ID: {}", userId);
-
-        List<Post> posts = postRepository.findAllByAuthor_Id(userId);
-        log.info("Found {} posts for user ID: {}", posts.size(), userId);
-
-        return posts.stream().map(post -> createDTO(post)).toList();
-    }
-
-    /**
-     * Get post by id
-     * @param id
-     * @return Post DTO 
-     */
-    @Override
-    public PostResponse getById(String id) {
-        log.debug("Retrieving post by ID: {}", id);
-
-        Post post = postRepository.findById(id).orElseThrow(() -> {
-            log.error("Post not found with ID: {}", id);
-            return new AppException(ErrorCode.POST_NOT_FOUND);
-        });
-
-        return createDTO(post);
-    }
-
     // ======================== UTILS OPERATIONS ========================
+    
+    /**
+     * Build MongoTamplate Query
+     * @param title
+     * @param topics
+     * @param authorId
+     * @param isDeleted
+     * @param pageable
+     * @return
+     */
+    private Query buildPostFilterQuery(String title, List<String> topics, Long authorId, Boolean isDeleted,
+            Pageable pageable) {
+        List<Criteria> criteriaList = new ArrayList<>();
+
+        if (title != null && !title.isBlank()) {
+            criteriaList.add(Criteria.where("title").regex(title, "i"));
+        }
+        if (topics != null && !topics.isEmpty()) {
+            criteriaList.add(Criteria.where("topics").in(topics));
+        }
+        if (authorId != null) {
+            criteriaList.add(Criteria.where("author.id").is(authorId));
+        }
+        if (isDeleted != null) {
+            criteriaList.add(Criteria.where("isDeleted").is(isDeleted));
+        }
+
+        Criteria finalCriteria = new Criteria();
+        if (!criteriaList.isEmpty()) {
+            finalCriteria.andOperator(criteriaList.toArray(new Criteria[0]));
+        }
+
+        return new Query(finalCriteria).with(pageable);
+    }
 
     /**
      * Map to response DTO
+     * 
      * @param source
      * @return
      */
@@ -238,6 +281,7 @@ public class PostServiceImpl implements PostService {
 
     /**
      * Update fields
+     * 
      * @param source
      * @param target
      */

@@ -14,7 +14,10 @@ public class SecurityConfig {
     private final static String[] whiteList = {
         "/actuator/**",
         "/public/**",
-        "/problems/internal/**"
+        "/problems/internal/**",
+        "/swagger-ui/**",
+        "/swagger-ui.html",
+        "/v3/api-docs/**"
     };
 
     private final static String[] getWhiteList = {
