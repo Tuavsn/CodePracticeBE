@@ -32,6 +32,13 @@ public class CommentServiceImpl implements CommentService {
     private final UserServiceClient userService;
     private final UserUtil userUtil;
 
+    // ======================== COMMENT CRUD OPERATIONS ========================
+
+    /**
+     * Create new Comment
+     * @param CommentRequest
+     * @return Comment DTO
+     */
     @Override
     @Transactional
     public CommentResponse save(CommentRequest request) {
@@ -59,7 +66,7 @@ public class CommentServiceImpl implements CommentService {
                     .build()
             );
 
-            updatePostCommentCount(request.getPostId(), CommentCountOp.INCREASE);
+            updatePostCommentCount(existedPost, CommentCountOp.INCREASE);
             
             log.info("Comment created successfully with ID: {}", saveComment.getId());
             return createDTO(saveComment);
@@ -70,6 +77,12 @@ public class CommentServiceImpl implements CommentService {
         }
     }
 
+    /**
+     * Update existed Comment
+     * @param id
+     * @param CommentRequest
+     * @return Comment DTO
+     */
     @Override
     @Transactional
     public CommentResponse update(String id, CommentRequest request) {
@@ -100,6 +113,10 @@ public class CommentServiceImpl implements CommentService {
         }
     }
 
+    /**
+     * Soft delete existed Comment
+     * @param id
+     */
     @Override
     @Transactional
     public void delete(String id) {
@@ -118,7 +135,9 @@ public class CommentServiceImpl implements CommentService {
             existedComment.setDeleted(true);
             commentRepository.save(existedComment);
 
-            updatePostCommentCount(existedComment.getPostId(), CommentCountOp.DESCREASE);
+            Post existedPost = postRepository.findById(existedComment.getPostId()).orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND));
+
+            updatePostCommentCount(existedPost, CommentCountOp.DESCREASE);
 
         } catch (Exception e) {
             log.error("Error soft deleting comment ID: {}", id, e);
@@ -126,6 +145,10 @@ public class CommentServiceImpl implements CommentService {
         }
     }
 
+    /**
+     * Hard delete existed Comment
+     * @param id
+     */
     @Override
     @Transactional
     public void hardDelete(String id) {
@@ -149,6 +172,10 @@ public class CommentServiceImpl implements CommentService {
         }
     }
 
+    /**
+     * Get all posts
+     * @return List of Comment DTO
+     */
     @Override
     public List<CommentResponse> getAllByPostId(String id) {
         log.debug("Retrieving comments for post ID: {}", id);
@@ -159,6 +186,11 @@ public class CommentServiceImpl implements CommentService {
         return comments.stream().map(comment -> createDTO(comment)).toList();
     }
 
+    /**
+     * Get post by user id
+     * @param userId
+     * @return List of Comment DTO 
+     */
     @Override
     public List<CommentResponse> getAllByUserId(String id) {
         log.debug("Retrieving comments by user ID: {}", id);
@@ -169,12 +201,23 @@ public class CommentServiceImpl implements CommentService {
         return comments.stream().map(comment -> createDTO(comment)).toList();
     }
 
+    /**
+     * Get personal comments
+     * @return List of Comment DTO 
+     */
     @Override
     public List<CommentResponse> getAllPersonalComments() {
         log.warn("getAllPersonalComments method called but not implemented");
         throw new UnsupportedOperationException("Unimplemented method 'getAllPersonalComments'");
     }
 
+    // ======================== UTILS OPERATIONS ========================
+    
+    /**
+     * Map to response DTO
+     * @param source
+     * @return
+     */
     private CommentResponse createDTO(Comment source) {
         return CommentResponse
             .builder()
@@ -188,15 +231,24 @@ public class CommentServiceImpl implements CommentService {
             .build();
     }
 
+    /**
+     * Update fields
+     * @param source
+     * @param target
+     */
     private void updateComment(CommentRequest source, Comment target) {
         if (source.getContent() != null) {
             target.setContent(source.getContent());
         }
     }
 
+    /**
+     * Update comment count
+     * @param existedPost
+     * @param op
+     */
     @Transactional
-    private void updatePostCommentCount(String postId, CommentCountOp op) {
-        Post existedPost = postRepository.findById(postId).orElseThrow(() -> new AppException(ErrorCode.POST_NOT_FOUND));
+    private void updatePostCommentCount(Post existedPost, CommentCountOp op) {
         long current = Optional.ofNullable(existedPost.getCommentCount()).orElse(0l);
         switch (op) {
             case INCREASE -> existedPost.setCommentCount(current + 1);

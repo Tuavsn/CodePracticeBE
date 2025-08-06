@@ -24,6 +24,8 @@ public class PostResponse {
     private String content;
     private Set<PostImage> images;
     private List<String> topics;
+    private long reactionCount;
+    private long commentCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

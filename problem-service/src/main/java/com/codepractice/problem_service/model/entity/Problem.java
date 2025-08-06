@@ -1,6 +1,7 @@
 package com.codepractice.problem_service.model.entity;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -29,6 +30,7 @@ public class Problem extends BaseEntity {
     private List<String> hints;
     private List<CodeTemplate> codeTemplates;
     private List<TestCase> sampleTests;
+    private Set<Reaction> reactions;
     private long reactionCount;
     private long commentCount;
     private long totalSubmissions;
