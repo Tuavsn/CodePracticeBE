@@ -228,6 +228,7 @@ public class PostServiceImpl implements PostService {
                 .topics(source.getTopics())
                 .content(source.getContent())
                 .images(source.getImages())
+                .reactions(source.getReactions())
                 .reactionCount(source.getReactionCount())
                 .commentCount(source.getCommentCount())
                 .createdAt(source.getCreatedAt())

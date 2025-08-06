@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.codepractice.forum_service.model.entity.Author;
 import com.codepractice.forum_service.model.entity.PostImage;
+import com.codepractice.forum_service.model.entity.Reaction;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,8 +23,9 @@ public class PostResponse {
     private String title;
     private String thumbnail;
     private String content;
-    private Set<PostImage> images;
     private List<String> topics;
+    private Set<PostImage> images;
+    private Set<Reaction> reactions;
     private long reactionCount;
     private long commentCount;
     private LocalDateTime createdAt;

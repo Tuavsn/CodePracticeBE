@@ -2,10 +2,12 @@ package com.codepractice.problem_service.model.dto.internal.response;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import com.codepractice.problem_service.enums.ProblemDifficulty;
 import com.codepractice.problem_service.model.entity.CodeExample;
 import com.codepractice.problem_service.model.entity.CodeTemplate;
+import com.codepractice.problem_service.model.entity.Reaction;
 import com.codepractice.problem_service.model.entity.TestCase;
 
 import lombok.AllArgsConstructor;
@@ -29,6 +31,7 @@ public class ProblemResponse {
     private List<String> hints;
     private List<CodeTemplate> codeTemplates;
     private List<TestCase> sampleTests;
+    private Set<Reaction> reactions;
     private long reactionCount;
     private long commentCount;
     private long totalSubmissions;

@@ -108,6 +108,7 @@ public class ReactionServiceImpl implements ReactionService {
                 .hints(source.getHints())
                 .codeTemplates(source.getCodeTemplates())
                 .sampleTests(source.getSampleTests())
+                .reactions(source.getReactions())
                 .reactionCount(source.getReactionCount())
                 .commentCount(source.getCommentCount())
                 .totalSubmissions(source.getTotalSubmissions())
