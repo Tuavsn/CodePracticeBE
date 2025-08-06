@@ -1,5 +1,6 @@
 package com.codepractice.problem_service.service.impl;
 
+import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -28,26 +29,26 @@ public class ProblemServiceImpl implements ProblemService {
         log.info("Create new problem");
         try {
             Problem savedProblem = problemRepository.save(
-                Problem.builder()
-                    .title(request.getTitle())
-                    .description(request.getDescription())
-                    .thumbnail(request.getThumbnail())
-                    .constraints(request.getConstraints())
-                    .difficulty(request.getDifficulty())
-                    .examples(request.getExamples())
-                    .tags(request.getTags())
-                    .hints(request.getHints())
-                    .codeTemplates(request.getCodeTemplates())
-                    .sampleTests(request.getSampleTests())
-                    .reactionCount(0)
-                    .commentCount(0)
-                    .totalSubmissions(0)
-                    .totalAcceptedSubmissions(0)
-                    .totalScore(request.getTotalScore())
-                    .timeLimitSeconds(request.getTimeLimitSeconds())
-                    .memoryLimitMb(request.getMemoryLimitMb())
-                    .build()
-            );
+                    Problem.builder()
+                            .title(request.getTitle())
+                            .description(request.getDescription())
+                            .thumbnail(request.getThumbnail())
+                            .constraints(request.getConstraints())
+                            .difficulty(request.getDifficulty())
+                            .examples(request.getExamples())
+                            .tags(request.getTags())
+                            .hints(request.getHints())
+                            .codeTemplates(request.getCodeTemplates())
+                            .sampleTests(request.getSampleTests())
+                            .reactions(new HashSet<>())
+                            .reactionCount(0)
+                            .commentCount(0)
+                            .totalSubmissions(0)
+                            .totalAcceptedSubmissions(0)
+                            .totalScore(request.getTotalScore())
+                            .timeLimitSeconds(request.getTimeLimitSeconds())
+                            .memoryLimitMb(request.getMemoryLimitMb())
+                            .build());
             log.info("Created problem with ID: {}", savedProblem.getId());
             return createDTO(savedProblem);
         } catch (Exception e) {
@@ -62,8 +63,8 @@ public class ProblemServiceImpl implements ProblemService {
         log.info("Update problem: {}", id);
         try {
             Problem existedProblem = problemRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.PROBLEM_NOT_FOUND));
-            
+                    .orElseThrow(() -> new AppException(ErrorCode.PROBLEM_NOT_FOUND));
+
             updateProblem(request, existedProblem);
             log.info("Updated problem: {}", id);
             return createDTO(existedProblem);
@@ -79,8 +80,8 @@ public class ProblemServiceImpl implements ProblemService {
         log.info("Delete problem: {}", id);
         try {
             Problem existedProblem = problemRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.PROBLEM_NOT_FOUND));
-            
+                    .orElseThrow(() -> new AppException(ErrorCode.PROBLEM_NOT_FOUND));
+
             existedProblem.setDeleted(true);
             problemRepository.save(existedProblem);
             log.info("Deleted problem: {}", id);
@@ -96,8 +97,8 @@ public class ProblemServiceImpl implements ProblemService {
         log.info("Hard delete problem: {}", id);
         try {
             Problem existedProblem = problemRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.PROBLEM_NOT_FOUND));
-            
+                    .orElseThrow(() -> new AppException(ErrorCode.PROBLEM_NOT_FOUND));
+
             problemRepository.delete(existedProblem);
             log.info("Hard deleted problem: {}", id);
         } catch (Exception e) {
@@ -124,8 +125,8 @@ public class ProblemServiceImpl implements ProblemService {
         log.info("Get problem: {}", id);
         try {
             Problem existedProblem = problemRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.PROBLEM_NOT_FOUND));
-            
+                    .orElseThrow(() -> new AppException(ErrorCode.PROBLEM_NOT_FOUND));
+
             return createDTO(existedProblem);
         } catch (Exception e) {
             log.error("Failed to get problem {}: {}", id, e.getMessage());
@@ -135,28 +136,28 @@ public class ProblemServiceImpl implements ProblemService {
 
     private ProblemResponse createDTO(Problem source) {
         return ProblemResponse
-                    .builder()
-                    .id(source.getId())
-                    .title(source.getTitle())
-                    .description(source.getDescription())
-                    .thumbnail(source.getThumbnail())
-                    .constraints(source.getConstraints())
-                    .difficulty(source.getDifficulty())
-                    .examples(source.getExamples())
-                    .tags(source.getTags())
-                    .hints(source.getHints())
-                    .codeTemplates(source.getCodeTemplates())
-                    .sampleTests(source.getSampleTests())
-                    .reactionCount(source.getReactionCount())
-                    .commentCount(source.getCommentCount())
-                    .totalSubmissions(source.getTotalSubmissions())
-                    .totalAcceptedSubmissions(source.getTotalAcceptedSubmissions())
-                    .timeLimitSeconds(source.getTimeLimitSeconds())
-                    .memoryLimitMb(source.getMemoryLimitMb())
-                    .totalScore(source.getTotalScore())
-                    .createdAt(source.getCreatedAt())
-                    .updatedAt(source.getUpdatedAt())
-                    .build();
+                .builder()
+                .id(source.getId())
+                .title(source.getTitle())
+                .description(source.getDescription())
+                .thumbnail(source.getThumbnail())
+                .constraints(source.getConstraints())
+                .difficulty(source.getDifficulty())
+                .examples(source.getExamples())
+                .tags(source.getTags())
+                .hints(source.getHints())
+                .codeTemplates(source.getCodeTemplates())
+                .sampleTests(source.getSampleTests())
+                .reactionCount(source.getReactionCount())
+                .commentCount(source.getCommentCount())
+                .totalSubmissions(source.getTotalSubmissions())
+                .totalAcceptedSubmissions(source.getTotalAcceptedSubmissions())
+                .timeLimitSeconds(source.getTimeLimitSeconds())
+                .memoryLimitMb(source.getMemoryLimitMb())
+                .totalScore(source.getTotalScore())
+                .createdAt(source.getCreatedAt())
+                .updatedAt(source.getUpdatedAt())
+                .build();
     }
 
     private void updateProblem(ProblemRequest source, Problem target) {
