@@ -51,9 +51,11 @@ public class PostServiceImpl implements PostService {
 
         Query query = buildPostFilterQuery(title, topics, authorId, null, pageable);
 
+        Query countQuery = buildPostFilterQuery(title, topics, authorId, null, null);
+
         List<Post> postsList = mongoTemplate.find(query, Post.class);
 
-        long total = postsList.size();
+        long total = mongoTemplate.count(countQuery, Post.class);
 
         Page<Post> posts = new PageImpl<>(postsList, pageable, total);
 
@@ -248,11 +250,18 @@ public class PostServiceImpl implements PostService {
         }
 
         Criteria finalCriteria = new Criteria();
+
         if (!criteriaList.isEmpty()) {
             finalCriteria.andOperator(criteriaList.toArray(new Criteria[0]));
         }
 
-        return new Query(finalCriteria).with(pageable);
+        Query query = new Query(finalCriteria);
+
+        if (pageable != null) {
+            query.with(pageable);
+        }
+
+        return query;
     }
 
     /**

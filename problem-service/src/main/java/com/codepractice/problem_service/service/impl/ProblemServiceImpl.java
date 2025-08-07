@@ -34,16 +34,18 @@ public class ProblemServiceImpl implements ProblemService {
 
     // ======================== PROBLEM CRUD OPERATIONS ========================
     @Override
-    public Page<ProblemResponse> getAll(String title, List<String> topic, ProblemDifficulty difficulty,
+    public Page<ProblemResponse> getAll(String title, List<String> topics, ProblemDifficulty difficulty,
             Pageable pageable) {
-        log.debug("Retrieving all active problem with filter - topic: {}, difficulty: {}, page: {}, size: {}", topic,
+        log.debug("Retrieving all active problem with filter - topic: {}, difficulty: {}, page: {}, size: {}", topics,
                 difficulty, pageable.getPageNumber(), pageable.getPageSize());
 
-        Query query = buildProblemFilterQuery(title, topic, difficulty, null, pageable);
+        Query query = buildProblemFilterQuery(title, topics, difficulty, null, pageable);
+
+        Query countQuery = buildProblemFilterQuery(title, topics, difficulty, null, null);
 
         List<Problem> problemsList = mongoTemplate.find(query, Problem.class);
 
-        long total = problemsList.size();
+        long total = mongoTemplate.count(countQuery, Problem.class);
 
         Page<Problem> problems = new PageImpl<>(problemsList, pageable, total);
 
@@ -183,11 +185,18 @@ public class ProblemServiceImpl implements ProblemService {
         }
 
         Criteria finalCriteria = new Criteria();
+
         if (!criteriaList.isEmpty()) {
             finalCriteria.andOperator(criteriaList.toArray(new Criteria[0]));
         }
 
-        return new Query(finalCriteria).with(pageable);
+        Query query = new Query(finalCriteria);
+
+        if (pageable != null) {
+            query.with(pageable);
+        }
+
+        return query;
     }
 
     /**

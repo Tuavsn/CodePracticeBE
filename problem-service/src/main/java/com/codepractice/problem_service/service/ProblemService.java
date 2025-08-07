@@ -10,7 +10,7 @@ import com.codepractice.problem_service.model.dto.internal.request.ProblemReques
 import com.codepractice.problem_service.model.dto.internal.response.ProblemResponse;
 
 public interface ProblemService {
-    public Page<ProblemResponse> getAll(String title, List<String> topic, ProblemDifficulty difficulty,
+    public Page<ProblemResponse> getAll(String title, List<String> topics, ProblemDifficulty difficulty,
             Pageable pageable);
 
     public ProblemResponse getById(String id);
