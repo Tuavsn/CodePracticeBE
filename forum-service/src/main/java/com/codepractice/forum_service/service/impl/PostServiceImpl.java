@@ -51,9 +51,11 @@ public class PostServiceImpl implements PostService {
 
         Query query = buildPostFilterQuery(title, topics, authorId, null, pageable);
 
+        Query countQuery = buildPostFilterQuery(title, topics, authorId, null, null);
+
         List<Post> postsList = mongoTemplate.find(query, Post.class);
 
-        long total = postsList.size();
+        long total = mongoTemplate.count(countQuery, Post.class);
 
         Page<Post> posts = new PageImpl<>(postsList, pageable, total);
 
