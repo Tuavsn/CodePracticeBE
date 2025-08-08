@@ -150,6 +150,9 @@ public class UserServiceImpl implements UserService {
 					.email(source.getEmail())
 					.username(source.getUsername())
 					.avatar(source.getAvatar())
+					.bio(source.getBio())
+					.gender(source.getGender())
+					.totalSubmissionPoint(source.getTotalSubmissionPoint())
 					.role(source.getRole())
 					.achievement(source.getAchievement())
 					.build();

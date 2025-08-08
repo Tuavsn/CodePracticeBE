@@ -1,6 +1,7 @@
 package com.codepractice.user_service.model.dto.response;
 
 import com.codepractice.user_service.enums.AccountAchievement;
+import com.codepractice.user_service.enums.AccountGender;
 import com.codepractice.user_service.enums.AccountRole;
 
 import lombok.Builder;
@@ -13,6 +14,9 @@ public class UserResponse {
     private String email;
     private String username;
     private String avatar;
+    private String bio;
+    private long totalSubmissionPoint;
     private AccountRole role;
+    private AccountGender gender;
     private AccountAchievement achievement;
 }
