@@ -34,14 +34,14 @@ public class ProblemServiceImpl implements ProblemService {
 
     // ======================== PROBLEM CRUD OPERATIONS ========================
     @Override
-    public Page<ProblemResponse> getAll(String title, List<String> topics, ProblemDifficulty difficulty,
+    public Page<ProblemResponse> getAll(String title, List<String> tags, ProblemDifficulty difficulty,
             Pageable pageable) {
-        log.debug("Retrieving all active problem with filter - topic: {}, difficulty: {}, page: {}, size: {}", topics,
+        log.debug("Retrieving all active problem with filter - topic: {}, difficulty: {}, page: {}, size: {}", tags,
                 difficulty, pageable.getPageNumber(), pageable.getPageSize());
 
-        Query query = buildProblemFilterQuery(title, topics, difficulty, null, pageable);
+        Query query = buildProblemFilterQuery(title, tags, difficulty, null, pageable);
 
-        Query countQuery = buildProblemFilterQuery(title, topics, difficulty, null, null);
+        Query countQuery = buildProblemFilterQuery(title, tags, difficulty, null, null);
 
         List<Problem> problemsList = mongoTemplate.find(query, Problem.class);
 
@@ -167,18 +167,18 @@ public class ProblemServiceImpl implements ProblemService {
      * @param pageable
      * @return
      */
-    private Query buildProblemFilterQuery(String title, List<String> topics, ProblemDifficulty difficulty,
+    private Query buildProblemFilterQuery(String title, List<String> tags, ProblemDifficulty difficulty,
             Boolean isDeleted, Pageable pageable) {
         List<Criteria> criteriaList = new ArrayList<>();
 
         if (title != null && !title.isBlank()) {
             criteriaList.add(Criteria.where("title").regex(title, "i"));
         }
-        if (topics != null && !topics.isEmpty()) {
-            criteriaList.add(Criteria.where("topics").in(topics));
+        if (tags != null && !tags.isEmpty()) {
+            criteriaList.add(Criteria.where("tags").in(tags));
         }
         if (difficulty != null) {
-            criteriaList.add(Criteria.where("author.id").is(difficulty));
+            criteriaList.add(Criteria.where("difficulty").is(difficulty));
         }
         if (isDeleted != null) {
             criteriaList.add(Criteria.where("isDeleted").is(isDeleted));

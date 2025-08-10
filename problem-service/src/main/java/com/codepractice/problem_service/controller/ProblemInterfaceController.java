@@ -51,11 +51,11 @@ public class ProblemInterfaceController {
             @Parameter(description = "Sort by field") @RequestParam(defaultValue = "createdAt") String sortBy,
             @Parameter(description = "Sort direction") @RequestParam(defaultValue = "desc") String sortDir,
             @Parameter(description = "Search by title") @RequestParam(required = false) String title,
-            @Parameter(description = "Filter by topic") @RequestParam(required = false) List<String> topic,
+            @Parameter(description = "Filter by topic") @RequestParam(required = false) List<String> tags,
             @Parameter(description = "Filter by difficulty") @RequestParam(required = false) ProblemDifficulty difficulty) {
         Sort sort = Sort.by(Sort.Direction.fromString(sortDir), sortBy);
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<ProblemResponse> problems = problemService.getAll(title, topic, difficulty, pageable);
+        Page<ProblemResponse> problems = problemService.getAll(title, tags, difficulty, pageable);
         return ResponseEntity.ok(ApiResponse.success(
                 problems,
                 "Problems retrieved successfully",
