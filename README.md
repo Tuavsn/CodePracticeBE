@@ -7,11 +7,9 @@ A comprehensive backend system for an online coding platform built with Spring B
 ### Core Services
 
 - **Auth Service**: Handles user authentication, authorization, and JWT token management
-- **Post Service**: Manages blog posts and comments
+- **Forum Service**: Manages blog posts and comments
 - **Problem Service**: Maintains coding problems, test cases, and difficulty levels
-- **Submission Service**: Processes code submissions and manages submission history
-- **Judge Service**: Executes and evaluates submitted code against test cases
-- **Notification Service**: Delivers real-time notifications and alerts to users
+- **Submission Service**: Processes code submissions and manages submission history, Executes and evaluates submitted code against test cases
 
 ## 🛠️ Technology Stack
 
@@ -54,13 +52,28 @@ cd CodePracticeBE
 
 ```bash
 # Start each service individually
-cd auth-service
+cd config-server
 mvn spring-boot:run
 
-cd ../post-service
+cd ../eureka-server
+mvn spring-boot:run
+
+cd ../api-gateway
+mvn spring-boot:run
+
+cd ../auth-service
+mvn spring-boot:run
+
+cd ../user-service
+mvn spring-boot:run
+
+cd ../forum-service
 mvn spring-boot:run
 
 cd ../problem-service
+mvn spring-boot:run
+
+cd ../submission-service
 mvn spring-boot:run
 
 # Repeat for other services...
@@ -95,13 +108,14 @@ docker run -p 8081:8081 codepractice-auth-service
 
 | Service | Default Port | Health Check |
 |---------|-------------|--------------|
-| Auth Service | 8081 | `/actuator/health` |
-| Post Service | 8082 | `/actuator/health` |
-| Problem Service | 8083 | `/actuator/health` |
-| Submission Service | 8084 | `/actuator/health` |
-| Judge Service | 8085 | `/actuator/health` |
-| Notification Service | 8086 | `/actuator/health` |
-| Chat Service | 8087 | `/actuator/health` |
+| Api Gateway | 8080 | `/actuator/health` |
+| Eureka Server | 8761 | `/actuator/health` |
+| Config Server | 8888 | `/actuator/health` |
+| Auth Service | 9000 | `/actuator/health` |
+| User Service | 9001 | `/actuator/health` |
+| Forum Service | 9002 | `/actuator/health` |
+| Problem Service | 9003 | `/actuator/health` |
+| Submission Service | 9004 | `/actuator/health` |
 
 ### API Gateway
 
@@ -116,15 +130,17 @@ http://localhost:8080/api/{service-name}/{endpoint}
 
 ```
 CodePracticeBE/
+├── api-gateway/             # Gateway
+├── eureka-server/           # Eureka Server
+├── config-server/           # Central Config Server
 ├── auth-service/
-├── post-service/
+├── user-service/
+├── forum-service/
 ├── problem-service/
 ├── submission-service/
-├── judge-service/
-├── notification-service/
-├── chat-service/
-├── common/              # Shared utilities and models
+├── common-lib/              # Shared utilities and models
 ├── docker-compose.yml
+├── pom.xml                  # Parent POM
 └── README.md
 ```
 
@@ -135,19 +151,6 @@ CodePracticeBE/
 3. Update API Gateway routing (if applicable)
 4. Add service to docker-compose.yml
 5. Update documentation
-
-### Testing
-
-```bash
-# Run unit tests for all services
-mvn test
-
-# Run integration tests
-mvn verify
-
-# Run tests for specific service
-cd auth-service && mvn test
-```
 
 ## 📊 Monitoring and Logging
 
@@ -162,12 +165,12 @@ cd auth-service && mvn test
 1. **Build Production Images**
    ```bash
    mvn clean package -DskipTests
-   docker-compose -f docker-compose.prod.yml build
+   docker-compose build
    ```
 
 2. **Deploy to Production**
    ```bash
-   docker-compose -f docker-compose.prod.yml up -d
+   docker-compose up -d
    ```
 
 ### Environment Variables
@@ -211,7 +214,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🌐 Demo
 
-Visit the live demo: [https://trinhhoctuan.io.vn](https://trinhhoctuan.io.vn)
+Visit the live demo: 
+- **Backend**: [https://codejudge.trinhhoctuan.io.vn](https://codejudge.trinhhoctuan.io.vn)
+- **Frontend**: [https://code-practice-fe.vercel.app](https://code-practice-fe.vercel.app)
 
 ## 📞 Contact
 
