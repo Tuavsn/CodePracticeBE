@@ -37,15 +37,18 @@
 	</properties>
 	<!-- Modules -->
 	<modules>
-		<module>common-lib</module>
-		<module>auth-service</module>
-		<module>user-service</module>
-		<module>submission-service</module>
-		<module>forum-service</module>
-		<module>problem-service</module>
-		<module>api-gateway</module>
-		<module>config-server</module>
-		<module>eureka-server</module>
+		<!-- Shared -->
+		<module>shared/common-lib</module>
+		<!-- Services -->
+		<module>services/auth-service</module>
+		<module>services/user-service</module>
+		<module>services/submission-service</module>
+		<module>services/forum-service</module>
+		<module>services/problem-service</module>
+		<!-- infrastructure -->
+		<module>infrastructure/api-gateway</module>
+		<module>infrastructure/config-server</module>
+		<module>infrastructure/eureka-server</module>
 	</modules>
 
 	<!-- Dependencies -->

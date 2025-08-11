@@ -1,6 +1,6 @@
 services:
   config-server:
-    build: ./config-server
+    build: ./infrastructure/config-server
     # ports:
     #   - "8888:8888"
     environment:
@@ -15,7 +15,7 @@ services:
       start_period: 40s
 
   eureka-server:
-    build: ./eureka-server
+    build: ./infrastructure/eureka-server
     # ports:
     #   - "8761:8761"
     depends_on:
@@ -52,7 +52,7 @@ services:
       retries: 5
 
   auth-service:
-    build: ./auth-service
+    build: ./services/auth-service
     # ports:
     #   - "9000:9000"
     depends_on:
@@ -101,7 +101,7 @@ services:
       retries: 5
 
   user-service:
-    build: ./user-service
+    build: ./services/user-service
     # ports:
     #   - "9001:9001"
     depends_on:
@@ -121,7 +121,7 @@ services:
       - code-judge-net
 
   forum-service:
-    build: ./forum-service
+    build: ./services/forum-service
     # ports:
     #   - "9002:9002"
     depends_on:
@@ -138,7 +138,7 @@ services:
       - code-judge-net
 
   problem-service:
-    build: ./problem-service
+    build: ./services/problem-service
     # ports:
     #   - "9003:9003"
     depends_on:
@@ -155,7 +155,7 @@ services:
       - code-judge-net
 
   submission-service:
-    build: ./submission-service
+    build: ./services/submission-service
     # ports:
     #   - "9004:9004"
     depends_on:
@@ -185,7 +185,7 @@ services:
       - code-judge-net
 
   api-gateway:
-    build: ./api-gateway
+    build: ./infrastructure/api-gateway
     ports:
       - "8080:8080"
     depends_on:
