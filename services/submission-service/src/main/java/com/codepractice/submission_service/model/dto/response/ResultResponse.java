@@ -1,5 +1,7 @@
 package com.codepractice.submission_service.model.dto.response;
 
+import java.time.LocalDateTime;
+
 import com.codepractice.submission_service.enums.SubmitResult;
 
 import lombok.AllArgsConstructor;
@@ -19,4 +21,5 @@ public class ResultResponse {
     private double time;
     private double memory;
     private double point;
+    private LocalDateTime createdAt;
 }

@@ -88,7 +88,7 @@ public class SubmissionServiceImpl implements SubmissionService {
         return problem.getSampleTests().stream().map(testcase -> Judge0Request.builder()
                 .source_code(solution.getCode())
                 .language_id(solution.getLanguage().getCode())
-                .stdin(testcase.getInput())
+                .stdin(testcase.getInput().trim().replace(",", "\n"))
                 .expected_output(testcase.getOutput())
                 .build()).toList();
     }
@@ -172,6 +172,7 @@ public class SubmissionServiceImpl implements SubmissionService {
                 .time(source.getTime())
                 .memory(source.getMemory())
                 .score(source.getScore())
+                .createdAt(source.getCreatedAt())
                 .build();
     }
 
@@ -183,6 +184,7 @@ public class SubmissionServiceImpl implements SubmissionService {
                 .stdout(source.getStdout())
                 .time(source.getTime())
                 .memory(source.getMemory())
+                .createdAt(source.getCreatedAt())
                 .build();
     }
 }

@@ -22,5 +22,5 @@ public class AsynchronousSubmit implements SubmitStrategy {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'execute'");
     }
-    
+
 }

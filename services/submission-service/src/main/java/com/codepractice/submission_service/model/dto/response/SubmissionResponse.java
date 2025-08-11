@@ -1,5 +1,7 @@
 package com.codepractice.submission_service.model.dto.response;
 
+import java.time.LocalDateTime;
+
 import com.codepractice.submission_service.enums.SubmitLanguage;
 import com.codepractice.submission_service.enums.SubmitResult;
 
@@ -22,4 +24,5 @@ public class SubmissionResponse {
     private double time;
     private double memory;
     private double score;
+    private LocalDateTime createdAt;
 }
