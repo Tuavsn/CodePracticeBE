@@ -22,11 +22,10 @@ public class PostRequest {
     @Size(min = 10, max = 100, message = "Title must be between 10 and 100 characters")
     private String title;
 
-    // @Pattern(regexp = "^(http(s)?://).*$", message = "Thumbnail must be a valid URL")
     private String thumbnail;
 
     @NotBlank(message = "Content is required")
-    @Size(min = 10, max = 100000, message = "Content must be between 10 and 100,000 characters")
+    @Size(min = 1, max = 100000, message = "Content must be between 10 and 100,000 characters")
     private String content;
 
     @Valid

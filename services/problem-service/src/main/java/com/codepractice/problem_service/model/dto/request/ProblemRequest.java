@@ -28,7 +28,7 @@ public class ProblemRequest {
     private String title;
 
     @NotBlank(message = "Description is required")
-    @Size(min = 10, max = 20000, message = "Description must be between 10 and 20,000 characters")
+    @Size(min = 1, max = 20000, message = "Description must be between 10 and 20,000 characters")
     private String description;
 
     private String thumbnail;
