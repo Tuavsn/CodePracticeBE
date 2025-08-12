@@ -32,6 +32,7 @@ import com.codepractice.problem_service.service.ReactionService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -77,7 +78,7 @@ public class ProblemController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "Create a new problem")
-    public ResponseEntity<ApiResponse<ProblemResponse>> createProblem(@RequestBody ProblemRequest problem) {
+    public ResponseEntity<ApiResponse<ProblemResponse>> createProblem(@Valid @RequestBody ProblemRequest problem) {
         ProblemResponse savedProblem = problemService.save(problem);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(savedProblem, "Problem created successfully", HttpStatus.CREATED.value()));
@@ -88,7 +89,7 @@ public class ProblemController {
     @Operation(summary = "Update a problem")
     public ResponseEntity<ApiResponse<ProblemResponse>> updateProblem(
             @PathVariable String problemId,
-            @RequestBody ProblemRequest problem) {
+            @Valid @RequestBody ProblemRequest problem) {
         ProblemResponse updatedProblem = problemService.update(problemId, problem);
         return ResponseEntity
                 .ok(ApiResponse.success(updatedProblem, "Problem updated successfully", HttpStatus.OK.value()));
@@ -130,7 +131,7 @@ public class ProblemController {
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @Operation(summary = "Create a new comment")
     public ResponseEntity<ApiResponse<CommentResponse>> createComment(
-            @RequestBody CommentRequest request) {
+            @Valid @RequestBody CommentRequest request) {
         CommentResponse created = commentService.save(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success(created, "Comment created successfully", HttpStatus.CREATED.value()));
@@ -141,7 +142,7 @@ public class ProblemController {
     @Operation(summary = "Update a comment")
     public ResponseEntity<ApiResponse<CommentResponse>> updateComment(
             @PathVariable String commentId,
-            @RequestBody CommentRequest request) {
+            @Valid @RequestBody CommentRequest request) {
         CommentResponse updated = commentService.update(commentId, request);
         return ResponseEntity.ok(
                 ApiResponse.success(updated, "Comment updated successfully", HttpStatus.OK.value()));

@@ -10,6 +10,8 @@ public interface UserService {
 
   public UserResponse update(UserRequest user);
 
+  public UserResponse updateProfile(UserRequest user);
+
   public void hardDelete(Long id);
 
   public List<UserResponse> getAll();

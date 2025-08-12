@@ -123,6 +123,24 @@ public class UserServiceImpl implements UserService {
 		return createDTO(user);
 	}
 
+	@Override
+	@Transactional
+	public UserResponse updateProfile(UserRequest user) {
+		Long userId = Long.parseLong(userUtil.getCurrentUserId());
+
+		log.info("Attempting to update user profile with id: {}", userId);
+
+		User existUser = userRepository.findById(userId)
+				.orElseThrow(() -> {
+					log.error("User not found for update with id: {}", userId);
+					return new AppException(ErrorCode.USER_NOT_FOUND);
+				});
+
+		User updatedUser = userRepository.save(updateUserDetails(user, existUser));
+		log.info("User updated successfully with ID: {}", updatedUser.getId());
+		return createDTO(updatedUser);
+	}
+
 	private User updateUserDetails(UserRequest source, User target) {
 		if (source.getAvatar() != null) {
 			target.setAvatar(source.getAvatar());

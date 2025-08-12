@@ -20,6 +20,7 @@ import com.codepractice.submission_service.model.dto.response.ResultResponse;
 import com.codepractice.submission_service.model.dto.response.SubmissionResponse;
 import com.codepractice.submission_service.service.SubmissionService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -30,7 +31,7 @@ public class SubmissionController {
 
     @PostMapping("/execute")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<ApiResponse<SubmissionResponse>> execute(@RequestBody SubmissionRequest solutions,
+    public ResponseEntity<ApiResponse<SubmissionResponse>> execute(@Valid @RequestBody SubmissionRequest solutions,
             @RequestParam ExecuteType type) {
         SubmissionResponse result = submissionService.execute(solutions, type);
         return ResponseEntity.status(HttpStatus.OK)
