@@ -30,7 +30,7 @@ public class SubmissionController {
     private final SubmissionService submissionService;
 
     @PostMapping("/execute")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'SYSTEM_ADMIN')")
     public ResponseEntity<ApiResponse<SubmissionResponse>> execute(@Valid @RequestBody SubmissionRequest solutions,
             @RequestParam ExecuteType type) {
         SubmissionResponse result = submissionService.execute(solutions, type);
@@ -39,7 +39,7 @@ public class SubmissionController {
     }
 
     @GetMapping()
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'SYSTEM_ADMIN')")
     public ResponseEntity<ApiResponse<List<SubmissionResponse>>> getSubmissions(@RequestParam String problemId) {
         List<SubmissionResponse> submissions = submissionService.getSubmissions(problemId);
         return ResponseEntity.ok(ApiResponse.success(
@@ -49,7 +49,7 @@ public class SubmissionController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'SYSTEM_ADMIN')")
     public ResponseEntity<ApiResponse<List<ResultResponse>>> getResultBySubmissionId(@PathVariable String id) {
         List<ResultResponse> results = submissionService.getResultBySubmissionId(id);
         return ResponseEntity.ok(ApiResponse.success(

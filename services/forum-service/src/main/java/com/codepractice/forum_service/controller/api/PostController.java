@@ -67,7 +67,7 @@ public class PostController {
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'SYSTEM_ADMIN')")
     @Operation(summary = "Create a new post")
     public ResponseEntity<ApiResponse<PostResponse>> createPost(@Valid @RequestBody PostRequest post) {
         PostResponse savedPost = postService.save(post);
@@ -76,7 +76,7 @@ public class PostController {
     }
 
     @PutMapping("/{postId}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'SYSTEM_ADMIN')")
     @Operation(summary = "Update a post")
     public ResponseEntity<ApiResponse<PostResponse>> updatePost(
             @PathVariable String postId,
@@ -86,7 +86,7 @@ public class PostController {
     }
 
     @DeleteMapping("/{postId}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'SYSTEM_ADMIN')")
     @Operation(summary = "Delete a post")
     public ResponseEntity<ApiResponse<String>> deletePost(@PathVariable String postId) {
         postService.hardDelete(postId);
@@ -117,7 +117,7 @@ public class PostController {
     }
 
     @PostMapping("/{postId}/comments")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'SYSTEM_ADMIN')")
     @Operation(summary = "Create a new comment")
     public ResponseEntity<ApiResponse<CommentResponse>> createComment(
             @Valid @RequestBody CommentRequest request) {
@@ -127,7 +127,7 @@ public class PostController {
     }
 
     @PutMapping("/{postId}/comments/{commentId}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'SYSTEM_ADMIN')")
     @Operation(summary = "Update a comment")
     public ResponseEntity<ApiResponse<CommentResponse>> updateComment(
             @PathVariable String commentId,
@@ -138,7 +138,7 @@ public class PostController {
     }
 
     @DeleteMapping("/{postId}/comments/{commentId}")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('USER', 'SYSTEM_ADMIN')")
     @Operation(summary = "Delete a comment")
     public ResponseEntity<ApiResponse<String>> deleteComment(@PathVariable String commentId) {
         commentService.delete(commentId);

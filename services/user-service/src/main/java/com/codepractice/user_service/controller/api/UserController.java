@@ -27,7 +27,7 @@ public class UserController {
     private final UserService userService;
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('SYSTEM_ADMIN')")
     public ResponseEntity<ApiResponse<String>> deleteUser(@PathVariable long id) {
         userService.hardDelete(id);
         return ResponseEntity
