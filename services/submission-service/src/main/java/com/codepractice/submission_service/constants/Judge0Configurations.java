@@ -15,14 +15,6 @@ public class Judge0Configurations {
     JUDGE0_ENDPOINT = value;
   }
 
-  // Callback URL
-  public static String CALLBACK_ENDPOINT;
-
-  @Value("${judge0.callback_url}")
-  public void setCallbackUrl(String value) {
-    CALLBACK_ENDPOINT = value;
-  }
-
   // Configuration settings (instance fields)
   public static int MAX_CPU_TIME_LIMIT;
 
@@ -132,7 +124,6 @@ public class Judge0Configurations {
   public static final String ENABLE_NETWORK = "enable_network";
   public static final String NUMBER_OF_RUNS = "number_of_runs";
   public static final String ADDITIONAL_FILES = "additional_files";
-  public static final String CALLBACK_URL = "callback_url";
   public static final String STDOUT = "stdout";
   public static final String STDERR = "stderr";
   public static final String COMPILE_OUTPUT = "compile_output";

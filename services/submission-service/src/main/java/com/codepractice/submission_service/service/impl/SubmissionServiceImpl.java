@@ -300,6 +300,11 @@ public class SubmissionServiceImpl implements SubmissionService {
     userServiceClient.updateUserStats(userUpdateStatsRequest);
   }
 
+  /**
+   * Updates the problem statistics after submission.
+   * 
+   * @param submission
+   */
   private void updateProblemStatsAsync(Submission submission) {
     UpdateProblemStatsRequest problemUpdateStatsRequest = UpdateProblemStatsRequest.builder()
         .id(submission.getProblemId())
