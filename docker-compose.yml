@@ -170,7 +170,7 @@ services:
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-server:8888
       - SUBMISSION_SERVICE_DB_URL=${SUBMISSION_SERVICE_DB_URL}
       - SUBMISSION_SERVICE_DB=${SUBMISSION_SERVICE_DB}
-      - JUDGE0_URL=${JUDGE0_URL}
+      - JUDGE0_ENDPOINT=${JUDGE0_ENDPOINT}
       - JUDGE0_AUTH_TOKEN=${JUDGE0_AUTH_TOKEN}
       # Judge0 configuration
       - MAX_CPU_TIME_LIMIT=15

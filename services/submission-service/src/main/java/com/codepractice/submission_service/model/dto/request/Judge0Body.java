@@ -1,17 +1,17 @@
 package com.codepractice.submission_service.model.dto.request;
 
-import java.util.Map;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class Judge0Request {
-  private Map<String, String> judge0Params;
-  private Judge0Body judge0Body;
+public class Judge0Body {
+    private String source_code;
+    private int language_id;
+    private String stdin;
+    private String expected_output;
 }

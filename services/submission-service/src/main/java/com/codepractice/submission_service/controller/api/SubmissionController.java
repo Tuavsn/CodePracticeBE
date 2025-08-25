@@ -14,9 +14,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.codepractice.common_lib.response.ApiResponse;
-import com.codepractice.submission_service.enums.ExecuteType;
+import com.codepractice.submission_service.model.dto.request.RunRequest;
 import com.codepractice.submission_service.model.dto.request.SubmissionRequest;
 import com.codepractice.submission_service.model.dto.response.ResultResponse;
+import com.codepractice.submission_service.model.dto.response.RunResponse;
 import com.codepractice.submission_service.model.dto.response.SubmissionResponse;
 import com.codepractice.submission_service.service.SubmissionService;
 
@@ -27,34 +28,42 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("submissions")
 @RequiredArgsConstructor
 public class SubmissionController {
-    private final SubmissionService submissionService;
+  private final SubmissionService submissionService;
 
-    @PostMapping("/execute")
-    @PreAuthorize("hasAnyRole('USER', 'SYSTEM_ADMIN')")
-    public ResponseEntity<ApiResponse<SubmissionResponse>> execute(@Valid @RequestBody SubmissionRequest solutions,
-            @RequestParam ExecuteType type) {
-        SubmissionResponse result = submissionService.execute(solutions, type);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.success(result, "Executed successfully", HttpStatus.OK.value()));
-    }
+  @PostMapping("/run")
+  @PreAuthorize("hasAnyRole('USER', 'SYSTEM_ADMIN')")
+  public ResponseEntity<ApiResponse<RunResponse>> runSolution(@Valid @RequestBody RunRequest solutions) {
+    RunResponse result = submissionService.runSolution(solutions);
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(ApiResponse.success(result, "Executed successfully", HttpStatus.OK.value()));
+  }
 
-    @GetMapping()
-    @PreAuthorize("hasAnyRole('USER', 'SYSTEM_ADMIN')")
-    public ResponseEntity<ApiResponse<List<SubmissionResponse>>> getSubmissions(@RequestParam String problemId) {
-        List<SubmissionResponse> submissions = submissionService.getSubmissions(problemId);
-        return ResponseEntity.ok(ApiResponse.success(
-                submissions,
-                "Problems retrieved successfully",
-                HttpStatus.OK.value()));
-    }
+  @PostMapping("/submit")
+  @PreAuthorize("hasAnyRole('USER', 'SYSTEM_ADMIN')")
+  public ResponseEntity<ApiResponse<SubmissionResponse>> submitSolution(
+      @Valid @RequestBody SubmissionRequest solutions) {
+    SubmissionResponse result = submissionService.submitSolution(solutions);
+    return ResponseEntity.status(HttpStatus.OK)
+        .body(ApiResponse.success(result, "Executed successfully", HttpStatus.OK.value()));
+  }
 
-    @GetMapping("/{id}")
-    @PreAuthorize("hasAnyRole('USER', 'SYSTEM_ADMIN')")
-    public ResponseEntity<ApiResponse<List<ResultResponse>>> getResultBySubmissionId(@PathVariable String id) {
-        List<ResultResponse> results = submissionService.getResultBySubmissionId(id);
-        return ResponseEntity.ok(ApiResponse.success(
-                results,
-                "Results retrieved successfully",
-                HttpStatus.OK.value()));
-    }
+  @GetMapping()
+  @PreAuthorize("hasAnyRole('USER', 'SYSTEM_ADMIN')")
+  public ResponseEntity<ApiResponse<List<SubmissionResponse>>> getSubmissions(@RequestParam String problemId) {
+    List<SubmissionResponse> submissions = submissionService.getSubmissions(problemId);
+    return ResponseEntity.ok(ApiResponse.success(
+        submissions,
+        "Problems retrieved successfully",
+        HttpStatus.OK.value()));
+  }
+
+  @GetMapping("/{id}")
+  @PreAuthorize("hasAnyRole('USER', 'SYSTEM_ADMIN')")
+  public ResponseEntity<ApiResponse<List<ResultResponse>>> getResultBySubmissionId(@PathVariable String id) {
+    List<ResultResponse> results = submissionService.getResultBySubmissionId(id);
+    return ResponseEntity.ok(ApiResponse.success(
+        results,
+        "Results retrieved successfully",
+        HttpStatus.OK.value()));
+  }
 }

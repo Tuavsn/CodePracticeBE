@@ -1,31 +1,36 @@
 package com.codepractice.submission_service.service.impl;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import com.codepractice.common_lib.enums.ErrorCode;
 import com.codepractice.common_lib.exceptions.AppException;
 import com.codepractice.common_lib.utils.UserUtil;
 import com.codepractice.submission_service.client.ProblemServiceClient;
-import com.codepractice.submission_service.constants.Judge0Configurations;
-import com.codepractice.submission_service.enums.ExecuteType;
+import com.codepractice.submission_service.client.UserServiceClient;
 import com.codepractice.submission_service.enums.SubmitResult;
 import com.codepractice.submission_service.model.dto.internal.ProblemClientTestCaseResponse;
-import com.codepractice.submission_service.model.dto.internal.ProblemClientTestCaseResponse.TestCase;
-import com.codepractice.submission_service.model.dto.request.Judge0Request;
+import com.codepractice.submission_service.model.dto.internal.UpdateProblemStatsRequest;
+import com.codepractice.submission_service.model.dto.internal.UpdateUserStatsRequest;
+import com.codepractice.submission_service.model.dto.request.ExecuteRequest;
+import com.codepractice.submission_service.model.dto.request.RunRequest;
 import com.codepractice.submission_service.model.dto.request.SubmissionRequest;
 import com.codepractice.submission_service.model.dto.response.Judge0Response;
 import com.codepractice.submission_service.model.dto.response.ResultResponse;
+import com.codepractice.submission_service.model.dto.response.RunResponse;
 import com.codepractice.submission_service.model.dto.response.SubmissionResponse;
-import com.codepractice.submission_service.model.entity.Result;
 import com.codepractice.submission_service.model.entity.Submission;
-import com.codepractice.submission_service.repository.ResultRepository;
+import com.codepractice.submission_service.model.entity.Submission.Result;
+import com.codepractice.submission_service.model.mapper.SubmissionMapper;
 import com.codepractice.submission_service.repository.SubmissionRepository;
+import com.codepractice.submission_service.service.Judge0Service;
 import com.codepractice.submission_service.service.SubmissionService;
-import com.codepractice.submission_service.service.SubmitStrategy;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,157 +39,287 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class SubmissionServiceImpl implements SubmissionService {
-    private final SubmissionFactory submissionFactory;
-    private final ProblemServiceClient problemService;
-    private final SubmissionRepository submissionRepository;
-    private final ResultRepository resultRepository;
-    private final UserUtil userUtil;
+  private final Judge0Service judge0Service;
+  private final ProblemServiceClient problemServiceClient;
+  private final SubmissionRepository submissionRepository;
+  private final SubmissionMapper submissionMapper;
+  private final UserServiceClient userServiceClient;
+  private final UserUtil userUtil;
 
-    @Override
-    public List<SubmissionResponse> getSubmissions(String problemId) {
-        Long userId = Long.parseLong(userUtil.getCurrentUserId());
+  private static final int DECIMAL_SCALE = 2;
 
-        log.info("Retrieve submissions for user ID: {}", userId);
-        
-        return submissionRepository.findAllByUserIdAndProblemId(userId, problemId).stream()
-                .map(submission -> createSubmissionDTO(submission)).toList();
+  /**
+   * Get all submissions for a specific problem.
+   * 
+   * @param problemId the ID of the problem
+   * @return a list of submission responses
+   */
+  @Override
+  public List<SubmissionResponse> getSubmissions(String problemId) {
+    Long userId = getCurrentUserId();
+    log.info("Retrieving submissions for user ID: {} and problem ID: {}", userId, problemId);
+
+    List<Submission> submissions = submissionRepository.findAllByUserIdAndProblemId(userId, problemId);
+
+    if (CollectionUtils.isEmpty(submissions)) {
+      log.debug("No submissions found for user ID: {} and problem ID: {}", userId, problemId);
+      return List.of();
     }
 
-    @Override
-    public List<ResultResponse> getResultBySubmissionId(String submissionId) {
-        return resultRepository.findAllBySubmissionId(submissionId).stream().map(result -> createResultDTO(result))
-                .toList();
+    return submissions.stream()
+        .map(submissionMapper::buildSubmissionDTO)
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * Retrieves all results for a specific submission.
+   * 
+   * @param submissionId the ID of the submission
+   * @return list of result responses
+   * @throws AppException if submission not found
+   */
+  @Override
+  public List<ResultResponse> getResultBySubmissionId(String submissionId) {
+    log.info("Retrieving results for submission ID: {}", submissionId);
+
+    Submission submission = submissionRepository.findById(submissionId).orElseThrow(() -> {
+      log.warn("Submission not found with ID: {}", submissionId);
+      return new AppException(ErrorCode.SUBMISSION_NOT_FOUND);
+    });
+
+    List<Result> resultDetails = submission.getResultDetails();
+    if (CollectionUtils.isEmpty(resultDetails)) {
+      log.debug("No result details found for submission ID: {}", submissionId);
+      return List.of();
     }
 
-    @Override
-    @Transactional
-    public SubmissionResponse execute(SubmissionRequest solution, ExecuteType type) {
-        ProblemClientTestCaseResponse problem = problemService.getProblemById(solution.getProblemId());
+    return resultDetails.stream()
+        .map(submissionMapper::buildResultDTO)
+        .collect(Collectors.toList());
+  }
 
-        SubmitStrategy strategy = submissionFactory.getSubmitStrategy(type);
+  /**
+   * Run a solution.
+   * 
+   * @param solution the solution request
+   * @return the run response
+   */
+  @Override
+  public RunResponse runSolution(RunRequest solution) {
+    log.info("Running solution for request: {}", solution);
 
-        Map<String, String> judge0Params = initializeJudge0Params();
+    try {
+      ExecuteRequest executeRequests = submissionMapper.buildRunRequest(solution);
 
-        List<Judge0Request> judge0Requests = initializeJudge0Body(problem, solution);
+      Judge0Response judge0Response = judge0Service.execute(executeRequests);
 
-        Submission savedSubmission = createSubmission(solution);
+      return submissionMapper.buildRunDTO(judge0Response);
+    } catch (Exception e) {
+      log.error("Error occurred while running solution: {}", e.getMessage());
+      throw new AppException(ErrorCode.EXECUTION_FAILED, e.getMessage());
+    }
+  }
 
-        List<Judge0Response> judge0Responses = strategy.execute(judge0Requests, judge0Params);
+  /**
+   * Submit a solution.
+   * 
+   * @param solutions the submission request
+   * @return the submission response
+   */
+  @Override
+  @Transactional
+  public SubmissionResponse submitSolution(SubmissionRequest solutions) {
+    log.info("Submitting solution for request: {}", solutions);
 
-        List<Result> savedResults = createResult(savedSubmission, judge0Responses);
+    try {
+      ProblemClientTestCaseResponse problem = problemServiceClient.getProblemById(solutions.getProblemId());
 
-        caculateSubmissionResult(problem, savedSubmission, savedResults);
+      // State 1: build judge0 requests
+      List<ExecuteRequest> executeRequests = submissionMapper.buildSubmissionRequests(problem, solutions);
 
-        return createSubmissionDTO(savedSubmission);
+      // State 2: execute request and save new submission result
+      List<Result> testResults = executeTestCases(executeRequests);
+
+      // State 3: create new submission
+      Submission submission = createNewSubmission(solutions, testResults);
+
+      // State 4: update statistics
+      updateUserStatsAsync(submission);
+      updateProblemStatsAsync(submission);
+
+      return submissionMapper.buildSubmissionDTO(submission);
+    } catch (Exception e) {
+      log.error("Error occurred while submitting solution: {}", e.getMessage());
+      throw new AppException(ErrorCode.EXECUTION_FAILED, e.getMessage());
+    }
+  }
+
+  // ======================== UTILS OPERATIONS ========================
+
+  /**
+   * Executes all test cases and returns results.
+   * 
+   * @param executeRequests list of execution requests
+   * @return list of test results
+   */
+  private List<Result> executeTestCases(List<ExecuteRequest> executeRequests) {
+    log.debug("Executing {} test cases", executeRequests.size());
+
+    return executeRequests.stream()
+        .map(this::executeAndBuildResult)
+        .collect(Collectors.toList());
+  }
+
+  /**
+   * Executes a single test case and builds the result.
+   */
+  private Result executeAndBuildResult(ExecuteRequest request) {
+    try {
+      Judge0Response response = judge0Service.execute(request);
+      SubmitResult result = SubmitResult.getByCode(response.getStatus().getId());
+
+      return Result.builder()
+          .result(result)
+          .token(response.getToken())
+          .stderr(response.getStderr())
+          .stdout(response.getStdout())
+          .compilerOutput(response.getCompile_output())
+          .message(response.getMessage())
+          .testCaseOrder(request.getTestCaseOrder())
+          .time(response.getTime())
+          .memory(response.getMemory())
+          .point(SubmitResult.ACCEPTED.equals(result) ? request.getTestCasePoint() : 0.0)
+          .build();
+
+    } catch (Exception e) {
+      log.error("Failed to execute test case order {}: {}",
+          request.getTestCaseOrder(), e.getMessage());
+
+      // Return a failed result instead of throwing exception
+      return Result.builder()
+          .result(SubmitResult.RUNTIME_ERROR)
+          .testCaseOrder(request.getTestCaseOrder())
+          .message("Execution failed: " + e.getMessage())
+          .time(0.0)
+          .memory(0.0)
+          .point(0.0)
+          .build();
+    }
+  }
+
+  /**
+   * Gets current user ID with proper error handling.
+   */
+  private Long getCurrentUserId() {
+    try {
+      String userIdStr = userUtil.getCurrentUserId();
+      return Long.parseLong(userIdStr);
+    } catch (NumberFormatException e) {
+      String userIdStr = userUtil.getCurrentUserId();
+      log.error("Invalid user ID format: {}", userIdStr);
+      throw new AppException(ErrorCode.USER_NOT_FOUND);
+    }
+  }
+
+  /**
+   * Create a new submission with processing status.
+   * 
+   * @param solution
+   * @param results
+   * @return
+   */
+  @Transactional
+  private Submission createNewSubmission(SubmissionRequest request, List<Result> results) {
+    Long userId = Long.parseLong(userUtil.getCurrentUserId());
+    SubmissionMetrics metrics = calculateSubmissionMetrics(results);
+
+    log.info("Creating new submission for user ID: {}", userId);
+
+    Submission submission = Submission.builder()
+        .userId(userId)
+        .problemId(request.getProblemId())
+        .language(request.getLanguage())
+        .code(request.getCode())
+        .result(metrics.overallResult)
+        .resultDetails(results)
+        .totalTime(metrics.totalTime)
+        .totalMemory(metrics.totalMemory)
+        .score(metrics.totalScore)
+        .build();
+
+    return submissionRepository.save(submission);
+  }
+
+  /**
+   * Calculates submission metrics from test results.
+   */
+  private SubmissionMetrics calculateSubmissionMetrics(List<Result> results) {
+    double totalTime = 0.0;
+    double totalMemory = 0.0;
+    double totalScore = 0.0;
+    SubmitResult overallResult = SubmitResult.ACCEPTED;
+
+    for (Result result : results) {
+      totalTime += result.getTime();
+      totalMemory += result.getMemory();
+      totalScore += result.getPoint();
+
+      // If any test case fails, mark overall submission as failed
+      if (!SubmitResult.ACCEPTED.equals(result.getResult())) {
+        overallResult = result.getResult(); // Use the specific failure reason
+      }
     }
 
-    private Map<String, String> initializeJudge0Params() {
-        return Map.of(
-                Judge0Configurations.TOKEN, Judge0Configurations.AUTH_TOKEN,
-                Judge0Configurations.RETURN_FIELD, Judge0Configurations.FIELD_LIST);
+    return new SubmissionMetrics(
+        roundToDecimalPlaces(totalTime),
+        roundToDecimalPlaces(totalMemory),
+        roundToDecimalPlaces(totalScore),
+        overallResult);
+  }
+
+  /**
+   * Rounds double values to specified decimal places for consistency.
+   */
+  private double roundToDecimalPlaces(double value) {
+    return BigDecimal.valueOf(value)
+        .setScale(DECIMAL_SCALE, RoundingMode.HALF_UP)
+        .doubleValue();
+  }
+
+  /**
+   * Update user statistics after submission.
+   * 
+   * @param submission
+   */
+  private void updateUserStatsAsync(Submission submission) {
+    UpdateUserStatsRequest userUpdateStatsRequest = UpdateUserStatsRequest.builder()
+        .id(submission.getUserId())
+        .newAchievePoint(submission.getScore())
+        .build();
+
+    userServiceClient.updateUserStats(userUpdateStatsRequest);
+  }
+
+  private void updateProblemStatsAsync(Submission submission) {
+    UpdateProblemStatsRequest problemUpdateStatsRequest = UpdateProblemStatsRequest.builder()
+        .id(submission.getProblemId())
+        .isAccepted(SubmitResult.ACCEPTED.equals(submission.getResult()))
+        .build();
+
+    problemServiceClient.updateProblemStats(problemUpdateStatsRequest);
+  }
+
+  private static class SubmissionMetrics {
+    final double totalTime;
+    final double totalMemory;
+    final double totalScore;
+    final SubmitResult overallResult;
+
+    SubmissionMetrics(double totalTime, double totalMemory, double totalScore, SubmitResult overallResult) {
+      this.totalTime = totalTime;
+      this.totalMemory = totalMemory;
+      this.totalScore = totalScore;
+      this.overallResult = overallResult;
     }
-
-    private List<Judge0Request> initializeJudge0Body(ProblemClientTestCaseResponse problem, SubmissionRequest solution) {
-        return problem.getSampleTests().stream().map(testcase -> Judge0Request.builder()
-                .source_code(solution.getCode())
-                .language_id(solution.getLanguage().getCode())
-                .stdin(testcase.getInput().trim().replace(",", "\n"))
-                .expected_output(testcase.getOutput())
-                .build()).toList();
-    }
-
-    @Transactional
-    private void caculateSubmissionResult(ProblemClientTestCaseResponse problem, Submission submission, List<Result> results) {
-        if (problem.getSampleTests().size() != results.size()) {
-            throw new AppException(ErrorCode.MISMATCH_BETWEEN_SAMPLETEST_AND_RESULT);
-        }
-
-        double totalExecuteTime = 0;
-        double totalExecuteMemory = 0;
-        double totalScore = 0;
-        SubmitResult submissionResult = SubmitResult.ACCEPTED;
-
-        for (int i = 0; i < results.size(); ++i) {
-            totalExecuteTime += results.get(i).getTime();
-            totalExecuteMemory += results.get(i).getMemory();
-            totalScore += getScore(problem.getSampleTests().get(i), results.get(i));
-
-            if (!submissionResult.ACCEPTED.equals(results.get(i).getResult())) {
-                submissionResult = submissionResult.WRONG_ANSWER;
-            }
-        }
-
-        submission.setTime(totalExecuteTime);
-        submission.setMemory(totalExecuteMemory);
-        submission.setScore(totalScore);
-        submission.setResult(submissionResult);
-
-        submissionRepository.save(submission);
-    }
-
-    private double getScore(TestCase testCase, Result result) {
-        return result.getResult().equals(SubmitResult.ACCEPTED) ? testCase.getPoint() : 0;
-    }
-
-    @Transactional
-    private Submission createSubmission(SubmissionRequest solution) {
-        Long userId = Long.parseLong(userUtil.getCurrentUserId());
-
-        log.info("Creating new submission for user ID: {}", userId);
-
-        return submissionRepository.save(
-                Submission.builder()
-                        .userId(userId)
-                        .problemId(solution.getProblemId())
-                        .language(solution.getLanguage())
-                        .code(solution.getCode())
-                        .result(SubmitResult.PROCESSING)
-                        .time(0)
-                        .memory(0)
-                        .score(0)
-                        .build());
-    }
-
-    @Transactional
-    private List<Result> createResult(Submission submission, List<Judge0Response> judge0Responses) {
-        return judge0Responses.stream().<Result>map(response -> resultRepository.save(
-                Result.builder()
-                        .submissionId(submission.getId())
-                        .result(SubmitResult.getByCode(response.getStatus_id()))
-                        .token(response.getToken())
-                        .error(response.getStderr())
-                        .stdout(response.getStdout())
-                        .time(response.getTime())
-                        .memory(response.getMemory())
-                        .point(0)
-                        .build()))
-                .toList();
-    }
-
-    private SubmissionResponse createSubmissionDTO(Submission source) {
-        return SubmissionResponse.builder()
-                .id(source.getId())
-                .userId(source.getUserId())
-                .problemId(source.getProblemId())
-                .language(source.getLanguage())
-                .code(source.getCode())
-                .result(source.getResult())
-                .time(source.getTime())
-                .memory(source.getMemory())
-                .score(source.getScore())
-                .createdAt(source.getCreatedAt())
-                .build();
-    }
-
-    private ResultResponse createResultDTO(Result source) {
-        return ResultResponse.builder()
-                .submissionId(source.getSubmissionId())
-                .result(source.getResult())
-                .error(source.getError())
-                .stdout(source.getStdout())
-                .time(source.getTime())
-                .memory(source.getMemory())
-                .createdAt(source.getCreatedAt())
-                .build();
-    }
+  }
 }

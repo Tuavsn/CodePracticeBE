@@ -7,9 +7,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.codepractice.problem_service.model.dto.internal.ProblemClientTestCaseResponse;
+import com.codepractice.problem_service.model.dto.internal.UpdateProblemStatsRequest;
 import com.codepractice.problem_service.service.ProblemService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @RestController
 @RequestMapping("problems")
@@ -26,4 +30,11 @@ public class ProblemInternalController {
             return ResponseEntity.badRequest().body(null);
         }
     }
+
+    @PostMapping("/internal/update-stats")
+    public ResponseEntity<Void> updateProblemStats(@RequestBody UpdateProblemStatsRequest request) {
+        problemService.updateProblemStats(request);
+        return ResponseEntity.noContent().build();
+    }
+    
 }

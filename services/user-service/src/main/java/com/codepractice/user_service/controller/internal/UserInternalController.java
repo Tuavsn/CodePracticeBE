@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.codepractice.user_service.model.dto.request.UserRequest;
+import com.codepractice.user_service.model.dto.internal.CreateUserRequest;
+import com.codepractice.user_service.model.dto.internal.UpdateUserStatsRequest;
 import com.codepractice.user_service.model.dto.response.UserResponse;
 import com.codepractice.user_service.service.UserService;
 
@@ -19,22 +20,28 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserInternalController {
-    private final UserService userService;
+  private final UserService userService;
 
-    @PostMapping("/internal")
-    public ResponseEntity<UserResponse> createUser(@RequestBody UserRequest user) {
-        UserResponse savedUser = userService.save(user);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(savedUser);
-    }
+  @PostMapping("/internal")
+  public ResponseEntity<UserResponse> registNewUser(@RequestBody CreateUserRequest request) {
+    UserResponse savedUser = userService.save(request);
+    return ResponseEntity.status(HttpStatus.CREATED)
+        .body(savedUser);
+  }
 
-    @GetMapping("/internal/{id}")
-    public ResponseEntity<UserResponse> getUserById(@PathVariable long id) {
-        UserResponse user = userService.getById(id);
-        if (user != null) {
-            return ResponseEntity.ok(user);
-        } else {
-            return ResponseEntity.badRequest().body(null);
-        }
+  @PostMapping("/internal/update-stats")
+  public ResponseEntity<Void> updateUserStats(@RequestBody UpdateUserStatsRequest request) {
+    userService.updateUserStats(request);
+    return ResponseEntity.noContent().build();
+  }
+
+  @GetMapping("/internal/{id}")
+  public ResponseEntity<UserResponse> getUserById(@PathVariable long id) {
+    UserResponse user = userService.getById(id);
+    if (user != null) {
+      return ResponseEntity.ok(user);
+    } else {
+      return ResponseEntity.badRequest().body(null);
     }
+  }
 }

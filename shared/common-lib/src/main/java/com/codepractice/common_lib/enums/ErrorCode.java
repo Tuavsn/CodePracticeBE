@@ -24,7 +24,10 @@ public enum ErrorCode {
   INVALID_REQUEST(1013, "Invalid request", HttpStatus.BAD_REQUEST),
   WEAK_PASSWORD(1014, "Weak password", HttpStatus.BAD_REQUEST),
   ACCOUNT_ALREADY_ACTIVE(1015, "Account already active", HttpStatus.BAD_REQUEST),
-  INVALID_AUTHOR(1016, "Invalid author", HttpStatus.BAD_REQUEST);
+  NO_TEST_CASES_AVAILABLE(1016, "No test cases available", HttpStatus.BAD_REQUEST),
+  SUBMISSION_NOT_FOUND(1017, "Submission not found", HttpStatus.NOT_FOUND),
+  EXECUTION_FAILED(1018, "Execution failed", HttpStatus.INTERNAL_SERVER_ERROR),
+  INVALID_AUTHOR(1019, "Invalid author", HttpStatus.BAD_REQUEST);
 
   private final int code;
   private final String message;

@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 public class TestCase {
     private String input;
     private String output;
+    private int order;
     private double point;
 }

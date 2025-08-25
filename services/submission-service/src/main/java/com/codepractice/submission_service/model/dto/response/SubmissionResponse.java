@@ -15,14 +15,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class SubmissionResponse {
-    private String id;
-    private Long userId;
-    private String problemId;
-    private String code;
-    private SubmitLanguage language;
-    private SubmitResult result;
-    private double time;
-    private double memory;
-    private double score;
-    private LocalDateTime createdAt;
+  private String id;
+  private Long userId;
+  private String problemId;
+  private String code;
+  private SubmitLanguage language;
+  private SubmitResult result;
+  private double time;
+  private double memory;
+  private double score;
+  private LocalDateTime createdAt;
 }

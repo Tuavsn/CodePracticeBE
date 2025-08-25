@@ -10,15 +10,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProblemClientTestCaseResponse {
-    private String id;
-    private List<TestCase> sampleTests;
+  private String id;
+  private List<TestCase> sampleTests;
+  private double timeLimitSeconds;
+  private double memoryLimitMb;
+  private double totalScore;
 
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class TestCase {
-        private String input;
-        private String output;
-        private double point;
-    }
+  @Data
+  @AllArgsConstructor
+  @NoArgsConstructor
+  public static class TestCase {
+    private String input;
+    private String output;
+    private int order;
+    private double point;
+  }
 }

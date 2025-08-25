@@ -13,6 +13,7 @@ public class SecurityConfig {
     private final static String[] whiteList = {
         "/actuator/**",
         "/public/**",
+        "/submissions/internal/**",
     };
 
     @Bean

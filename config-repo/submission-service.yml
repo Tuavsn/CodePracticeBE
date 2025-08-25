@@ -22,7 +22,7 @@ eureka:
       defaultZone: http://localhost:8761/eureka
 
 judge0:
-  url: ${JUDGE0_URL}
+  url: ${JUDGE0_ENDPOINT}
   judge0_auth_token: ${JUDGE0_AUTH_TOKEN}
   max_cpu_time_limit: ${MAX_CPU_TIME_LIMIT:15}
   max_cpu_extra_time: ${MAX_CPU_EXTRA_TIME:2}

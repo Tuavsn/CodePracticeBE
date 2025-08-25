@@ -6,25 +6,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class Judge0Response {
-  private int language_id;
+public class RunResponse {
   private String stdout;
   private String stderr;
-  private String token;
-  private double time;
-  private double memory;
   private String compile_output;
   private String message;
-  private Status status;
-
-  @Data
-  @AllArgsConstructor
-  @NoArgsConstructor
-  public static class Status {
-    private int id;
-    private String description;
-  }
+  private double time;
+  private double memory;
+  private boolean success;
 }

@@ -16,4 +16,7 @@ import lombok.NoArgsConstructor;
 public class ProblemClientTestCaseResponse {
     private String id;
     private List<TestCase> sampleTests;
+    private double timeLimitSeconds;
+    private double memoryLimitMb;
+    private double totalScore;
 }

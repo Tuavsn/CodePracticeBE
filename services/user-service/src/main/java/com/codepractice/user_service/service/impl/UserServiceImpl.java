@@ -9,9 +9,12 @@ import com.codepractice.common_lib.enums.ErrorCode;
 import com.codepractice.common_lib.exceptions.AppException;
 import com.codepractice.common_lib.utils.UserUtil;
 import com.codepractice.user_service.enums.AccountAchievement;
-import com.codepractice.user_service.model.dto.request.UserRequest;
+import com.codepractice.user_service.model.dto.internal.CreateUserRequest;
+import com.codepractice.user_service.model.dto.internal.UpdateUserStatsRequest;
+import com.codepractice.user_service.model.dto.request.UpdateProfileRequest;
 import com.codepractice.user_service.model.dto.response.UserResponse;
 import com.codepractice.user_service.model.entity.User;
+import com.codepractice.user_service.model.mapper.UserMapper;
 import com.codepractice.user_service.repository.UserRepository;
 import com.codepractice.user_service.service.UserService;
 
@@ -23,158 +26,191 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-	private final UserRepository userRepository;
-	private final UserUtil userUtil;
+  private final UserRepository userRepository;
+  private final UserMapper userMapper;
+  private final UserUtil userUtil;
 
-	@Override
-	@Transactional
-	public UserResponse save(UserRequest request) {
-		request.setEmail(request.getEmail().toLowerCase());
+  /**
+   * Get all users
+   * 
+   * @return list of users
+   */
+  @Override
+  public List<UserResponse> getAll() {
+    log.debug("Retrieving all users");
 
-		log.info("Attempting to save user with email: {}", request.getEmail());
+    List<User> users = userRepository.findAll();
 
-		Optional<User> existUser = userRepository.findByEmail(request.getEmail());
+    log.debug("Retrieved {} users", users.size());
 
-		existUser.ifPresent(userFound -> {
-			log.warn("Email already registered: {}", request.getEmail());
-			throw new AppException(ErrorCode.EMAIL_ALREADY_REGISTERED);
-		});
+    return users.stream().map(user -> userMapper.toDTO(user)).toList();
+  }
 
-		User savedUser = userRepository.save(
-				User.builder()
-						.id(request.getId())
-						.email(request.getEmail())
-						.username(request.getUsername())
-						.totalSubmissionPoint(0)
-						.role(request.getRole())
-						.achievement(AccountAchievement.BEGINNER)
-						.build());
+  /**
+   * Get user by ID
+   * 
+   * @param id
+   * @return user info
+   */
+  @Override
+  public UserResponse getById(Long id) {
+    log.debug("Retrieving user by ID: {}", id);
 
-		log.info("User saved successfully with ID: {} and email: {}", savedUser.getId(), savedUser.getEmail());
+    User user = userRepository.findById(id).orElseThrow(() -> {
+      log.error("User not found with ID: {}", id);
+      return new AppException(ErrorCode.USER_NOT_FOUND);
+    });
 
-		return createDTO(savedUser);
-	}
+    return userMapper.toDTO(user);
+  }
 
-	@Override
-	@Transactional
-	public UserResponse update(UserRequest user) {
-		log.info("Attempting to update user with email: {}", user.getEmail());
+  /**
+   * Get user profile
+   * 
+   * @return user info
+   */
+  @Override
+  public UserResponse getProfile() {
+    Long userId = Long.parseLong(userUtil.getCurrentUserId());
 
-		User existUser = userRepository.findByEmail(user.getEmail())
-				.orElseThrow(() -> {
-					log.error("User not found for update with email: {}", user.getEmail());
-					return new AppException(ErrorCode.USER_NOT_FOUND);
-				});
+    log.debug("Retrieving user profile: {}", userId);
 
-		User updatedUser = userRepository.save(updateUserDetails(user, existUser));
-		log.info("User updated successfully with ID: {}", updatedUser.getId());
-		return createDTO(updatedUser);
-	}
+    User user = userRepository.findById(userId).orElseThrow(() -> {
+      log.error("User not found with ID: {}", userId);
+      return new AppException(ErrorCode.USER_NOT_FOUND);
+    });
 
-	@Override
-	@Transactional
-	public void hardDelete(Long id) {
-		log.info("Attempting to hard delete user with ID: {}", id);
+    return userMapper.toDTO(user);
+  }
 
-		User user = userRepository.findById(id).orElseThrow(() -> {
-			log.error("User not found with ID: {}", id);
-			return new AppException(ErrorCode.USER_NOT_FOUND);
-		});
+  /**
+   * Create a new user
+   * 
+   * @param request user details
+   * @return created user info
+   */
+  @Override
+  @Transactional
+  public UserResponse save(CreateUserRequest request) {
+    request.setEmail(request.getEmail().toLowerCase());
 
-		userRepository.delete(user);
+    log.info("Attempting to save user with email: {}", request.getEmail());
 
-		log.warn("User hard deleted successfully - ID: {}, Email: {}", user.getId(), user.getEmail());
-	}
+    Optional<User> existUser = userRepository.findByEmail(request.getEmail());
 
-	@Override
-	public List<UserResponse> getAll() {
-		log.debug("Retrieving all users");
+    existUser.ifPresent(userFound -> {
+      log.warn("Email already registered: {}", request.getEmail());
+      throw new AppException(ErrorCode.EMAIL_ALREADY_REGISTERED);
+    });
 
-		List<User> users = userRepository.findAll();
+    User savedUser = userRepository.save(userMapper.toEntity(request));
 
-		log.debug("Retrieved {} users", users.size());
+    log.info("User saved successfully with ID: {} and email: {}", savedUser.getId(), savedUser.getEmail());
 
-		return users.stream().map(user -> createDTO(user)).toList();
-	}
+    return userMapper.toDTO(savedUser);
+  }
 
-	@Override
-	public UserResponse getById(Long id) {
-		log.debug("Retrieving user by ID: {}", id);
+  /**
+   * Update user stats
+   * 
+   * @param request user stats update request
+   * @return updated user info
+   */
+  @Override
+  @Transactional
+  public void updateUserStats(UpdateUserStatsRequest request) {
+    Long id = request.getId();
 
-		User user = userRepository.findById(id).orElseThrow(() -> {
-			log.error("User not found with ID: {}", id);
-			return new AppException(ErrorCode.USER_NOT_FOUND);
-		});
+    log.info("Updating user stats for user ID: {}", id);
 
-		return createDTO(user);
-	}
+    Optional<User> existUser = userRepository.findById(id);
 
-	@Override
-	public UserResponse getProfile() {
-		Long userId = Long.parseLong(userUtil.getCurrentUserId());
+    existUser.ifPresentOrElse(user -> {
+      updateStats(user, request.getNewAchievePoint());
+      log.info("User stats updated successfully for ID: {}", id);
+    }, () -> {
+      log.error("User not found with ID: {}", id);
+      throw new AppException(ErrorCode.USER_NOT_FOUND);
+    });
+  }
 
-		log.debug("Retrieving user profile: {}", userId);
+  /**
+   * Hard delete user by ID
+   * 
+   * @param id user id
+   */
+  @Override
+  @Transactional
+  public void hardDelete(Long id) {
+    log.info("Attempting to hard delete user with ID: {}", id);
 
-		User user = userRepository.findById(userId).orElseThrow(() -> {
-			log.error("User not found with ID: {}", userId);
-			return new AppException(ErrorCode.USER_NOT_FOUND);
-		});
+    Optional<User> existUser = userRepository.findById(id);
 
-		return createDTO(user);
-	}
+    existUser.ifPresentOrElse(user -> {
+      userRepository.delete(user);
+      log.warn("User hard deleted successfully - ID: {}, Email: {}", user.getId(), user.getEmail());
+    }, () -> {
+      log.error("User not found with ID: {}", id);
+      throw new AppException(ErrorCode.USER_NOT_FOUND);
+    });
+  }
 
-	@Override
-	@Transactional
-	public UserResponse updateProfile(UserRequest user) {
-		Long userId = Long.parseLong(userUtil.getCurrentUserId());
+  /**
+   * Update user profile
+   * 
+   * @param request update fields
+   * @return new user info
+   */
+  @Override
+  @Transactional
+  public UserResponse updateProfile(UpdateProfileRequest request) {
+    Long userId = Long.parseLong(userUtil.getCurrentUserId());
 
-		log.info("Attempting to update user profile with id: {}", userId);
+    log.info("Attempting to update user profile with id: {}", userId);
 
-		User existUser = userRepository.findById(userId)
-				.orElseThrow(() -> {
-					log.error("User not found for update with id: {}", userId);
-					return new AppException(ErrorCode.USER_NOT_FOUND);
-				});
+    User existUser = userRepository.findById(userId)
+        .orElseThrow(() -> {
+          log.error("User not found for update with id: {}", userId);
+          return new AppException(ErrorCode.USER_NOT_FOUND);
+        });
 
-		User updatedUser = userRepository.save(updateUserDetails(user, existUser));
-		log.info("User updated successfully with ID: {}", updatedUser.getId());
-		return createDTO(updatedUser);
-	}
+    User updatedUser = userMapper.update(request, existUser);
 
-	private User updateUserDetails(UserRequest source, User target) {
-		if (source.getAvatar() != null) {
-			target.setAvatar(source.getAvatar());
-		}
+    log.info("User updated successfully with ID: {}", updatedUser.getId());
 
-		if (source.getPhone() != null) {
-			target.setPhone(source.getPhone());
-		}
+    return userMapper.toDTO(updatedUser);
+  }
 
-		if (source.getAddress() != null) {
-			target.setAddress(source.getAddress());
-		}
+  // ======================== UTILS OPERATIONS ========================
+  /**
+   * Update user stats
+   * 
+   * @param user
+   * @param newPoint
+   */
+  private void updateStats(User user, double newPoint) {
+    double oldPoint = user.getTotalSubmissionPoint();
+    user.setTotalSubmissionPoint(oldPoint + newPoint);
 
-		if (source.getBio() != null) {
-			target.setBio(source.getBio());
-		}
+    AccountAchievement newAchievement = getAchievement(user.getTotalSubmissionPoint());
+    user.setAchievement(newAchievement);
+    
+    userRepository.save(user);
+  }
 
-		return target;
-	}
-
-	private UserResponse createDTO(User source) {
-		if (source != null) {
-			return UserResponse.builder()
-					.id(source.getId())
-					.email(source.getEmail())
-					.username(source.getUsername())
-					.avatar(source.getAvatar())
-					.bio(source.getBio())
-					.gender(source.getGender())
-					.totalSubmissionPoint(source.getTotalSubmissionPoint())
-					.role(source.getRole())
-					.achievement(source.getAchievement())
-					.build();
-		}
-		return null;
-	}
+  /**
+   * Get user achievement level based on points
+   * 
+   * @param point
+   * @return
+   */
+  private AccountAchievement getAchievement(double point) {
+    if (point < 1000) {
+      return AccountAchievement.BEGINNER;
+    } else if (point < 5000) {
+      return AccountAchievement.INTERMEDIATE;
+    } else {
+      return AccountAchievement.EXPERT;
+    }
+  }
 }

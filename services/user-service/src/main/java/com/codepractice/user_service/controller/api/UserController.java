@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.codepractice.common_lib.response.ApiResponse;
-import com.codepractice.user_service.model.dto.request.UserRequest;
+import com.codepractice.user_service.model.dto.request.UpdateProfileRequest;
 import com.codepractice.user_service.model.dto.response.UserResponse;
 import com.codepractice.user_service.service.UserService;
 
@@ -48,8 +48,8 @@ public class UserController {
     }
 
     @PutMapping("/profile")
-    public ResponseEntity<UserResponse> updateProfile(@RequestBody UserRequest user) {
-        UserResponse updatedProfile = userService.updateProfile(user);
+    public ResponseEntity<UserResponse> updateProfile(@RequestBody UpdateProfileRequest request) {
+        UserResponse updatedProfile = userService.updateProfile(request);
         return ResponseEntity.ok(updatedProfile);
     }
 

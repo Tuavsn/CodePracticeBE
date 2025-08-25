@@ -39,7 +39,7 @@ jobs:
         # Submission service DB & Judge0
         SUBMISSION_SERVICE_DB_URL:  ${{ secrets.SUBMISSION_SERVICE_DB_URL }}
         SUBMISSION_SERVICE_DB:      ${{ secrets.SUBMISSION_SERVICE_DB }}
-        JUDGE0_URL:                 ${{ vars.JUDGE0_URL }}
+        JUDGE0_ENDPOINT:            ${{ vars.JUDGE0_ENDPOINT }}
         JUDGE0_AUTH_TOKEN:          ${{ secrets.JUDGE0_AUTH_TOKEN }}
 
         # OAuth for Auth Service

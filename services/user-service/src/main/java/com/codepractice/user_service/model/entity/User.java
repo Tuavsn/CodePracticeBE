@@ -46,7 +46,7 @@ public class User {
   @Column(columnDefinition = "LONGTEXT")
   private String bio;
 
-  private long totalSubmissionPoint;
+  private double totalSubmissionPoint;
 
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)

@@ -14,12 +14,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class ResultResponse {
-    private String submissionId;
-    private SubmitResult result;
-    private String error;
-    private String stdout;
-    private double time;
-    private double memory;
-    private double point;
-    private LocalDateTime createdAt;
+  private String submissionId;
+  private SubmitResult result;
+  private String error;
+  private String stdout;
+  private String compilerOutput;
+  private String message;
+  private double time;
+  private double memory;
+  private double point;
+  private LocalDateTime createdAt;
 }

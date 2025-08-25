@@ -15,7 +15,7 @@ public class UserResponse {
     private String username;
     private String avatar;
     private String bio;
-    private long totalSubmissionPoint;
+    private double totalSubmissionPoint;
     private AccountRole role;
     private AccountGender gender;
     private AccountAchievement achievement;
